@@ -14,14 +14,19 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren> = ({
   const { setSessionStorage } = useSessionStorage();
   const history = useHistory();
   const handleMenuItemClick = useCallback(({ key }: { key: string }) => {
-    //....
+
     console.log("Clicked", key);
+
     if (key === "sample") {
       history.push("/sample");
     }
 
     if (key === "sports") {
       history.push("/sports")
+    }
+
+    if (key === "categories") {
+      history.push("/categories")
     }
   }, []);
 
@@ -31,6 +36,7 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren> = ({
       history.push("/login");
     }
   }, []);
+  
   const menuItems = useMemo<MenuProps["items"]>(
     () =>
       menuItemKeys.map((key) => ({
@@ -95,12 +101,14 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren> = ({
 
 type MenuItems =
   | "sports"
+  | "categories"
   | "sample"
 type UserMenuItems = "logout";
 
 const menuItemKeys: MenuItems[] = [
   "sports",
   "sample",
+  "categories"
 ];
 
 const userMenuItemKeys: UserMenuItems[] = ["logout"];
@@ -108,6 +116,7 @@ const userMenuItemKeys: UserMenuItems[] = ["logout"];
 const getNameByMenuKey = typeSafeSwitch<MenuItems | UserMenuItems, string>({
   sports: "Sports",
   sample: "Sample",
+  categories: "Categories",
   logout: "Log out",
 });
 

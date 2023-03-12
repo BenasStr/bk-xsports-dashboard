@@ -1,0 +1,23 @@
+"filename", "language", "TypeScript", "TypeScript JSX", "CSS", "comment", "blank", "total"
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/App.tsx", "TypeScript JSX", 0, 27, 0, 1, 3, 31
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/api/api.ts", "TypeScript", 27, 0, 0, 0, 3, 30
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/api/apipayloads.d.ts", "TypeScript", 18, 0, 0, 0, 5, 23
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/components/generics/Text.tsx", "TypeScript JSX", 0, 34, 0, 0, 4, 38
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/components/layouts/PageLayout.tsx", "TypeScript JSX", 0, 4, 0, 0, 2, 6
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/components/scenes/LoginPage.css", "CSS", 0, 0, 20, 0, 3, 23
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/components/scenes/LoginPage.tsx", "TypeScript JSX", 0, 60, 0, 0, 7, 67
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/components/scenes/MainLayout.css", "CSS", 0, 0, 5, 0, 0, 5
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/components/scenes/MainLayout.tsx", "TypeScript JSX", 0, 103, 0, 1, 11, 115
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/components/scenes/MainPortal.tsx", "TypeScript JSX", 0, 21, 0, 0, 5, 26
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/components/scenes/samplepage/SamplePage.tsx", "TypeScript JSX", 0, 80, 0, 0, 6, 86
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/components/scenes/sportPage/SportPage.tsx", "TypeScript JSX", 0, 46, 0, 0, 7, 53
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/controls/AuthUserGuard.tsx", "TypeScript JSX", 0, 22, 0, 0, 4, 26
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/hooks.ts", "TypeScript", 18, 0, 0, 0, 8, 26
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/index.css", "CSS", 0, 0, 11, 0, 2, 13
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/main.tsx", "TypeScript JSX", 0, 23, 0, 0, 2, 25
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/store/entities.ts", "TypeScript", 3, 0, 0, 0, 1, 4
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/store/rootReducer.ts", "TypeScript", 6, 0, 0, 0, 4, 10
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/store/store.d.ts", "TypeScript", 3, 0, 0, 0, 1, 4
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/utils/generics.ts", "TypeScript", 13, 0, 0, 0, 3, 16
+"/Users/benas/Coding/Learning/University/Bakalauras/bk-xsports-dashboard/src/vite-env.d.ts", "TypeScript", 0, 0, 0, 1, 1, 2
+"Total", "-", 88, 420, 36, 3, 82, 629

@@ -28,3 +28,16 @@ export const getSports = async (token: string) => {
   );
   return response.data.data;
 }
+
+export const getCategories = async (token: string) => {
+  const response: AxiosResponse<any, any> = await axios.get(
+    `${API_PREFIX}/sports/1/categories`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data.data;
+}

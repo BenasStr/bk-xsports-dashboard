@@ -1,14 +1,15 @@
+import CategoryPage from "./categoryPage/CategoryPage";
 import MainLayout from "./MainLayout";
 import SamplePage from "./samplepage/SamplePage";
 import SportPage from "./sportPage/SportPage"
 
-type PortalType = "SPORTS" | "SAMPLE" | "?";
+type PortalType = "SPORTS" | "SAMPLE" | "CATEGORIES" | "?";
 
 interface Props {
   portalType: PortalType;
 }
 
-const MainProtal: React.FunctionComponent<React.PropsWithChildren<Props>> = ({
+const MainPrortal: React.FunctionComponent<React.PropsWithChildren<Props>> = ({
   portalType,
   children,
 }) => {
@@ -18,8 +19,9 @@ const MainProtal: React.FunctionComponent<React.PropsWithChildren<Props>> = ({
       {portalType === "?" && <>?</>}
       {portalType === "SAMPLE" && <SamplePage />}
       {portalType === "SPORTS" && <SportPage/>}
+      {portalType === "CATEGORIES" && <CategoryPage/>}
     </MainLayout>
   );
 };
 
-export default MainProtal;
+export default MainPrortal;

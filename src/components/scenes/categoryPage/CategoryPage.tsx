@@ -1,32 +1,32 @@
 import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Space, Table } from "antd";
 import { useCallback, useEffect, useState } from "react";
-import { getSports } from "../../../api/api";
-import { GetSportPayload } from "../../../api/apipayloads";
+import { getCategories } from "../../../api/api";
+import { GetCategoryPayload, GetSportPayload } from "../../../api/apipayloads";
 import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../../hooks";
 
-const SportsPage: React.FunctionComponent = () => {
-  const [data, setData] = useState<GetSportPayload[]>();
+const CategoryPage: React.FunctionComponent = () => {
+  const [data, setData] = useState<GetCategoryPayload[]>();
   const {sessionStorage} = useSessionStorage();
 
-  const getSportsData = async () => {
+  const getCategoriesData = async () => {
     try {
-      const data: GetSportPayload[] = await getSports(sessionStorage?sessionStorage:"");
+      const data: GetCategoryPayload[] = await getCategories(sessionStorage?sessionStorage:"");
       setData(data)
     } catch (err) {
-      console.log("Failed to reterieve sports")
+      console.log("Failed to reterieve categories")
     }
   }
 
   useEffect(() => {
-    getSportsData()
+    getCategoriesData()
   }, []);
 
   return (
     <Table dataSource={data} pagination={{ pageSize: 20 }}>
       <Table.Column key="index" dataIndex="id" title="Index" width={25}/>
-      <Table.Column key="sport" dataIndex="name" title="SPORT" />
+      <Table.Column key="category" dataIndex="name" title="Category" />
       <Table.Column
         key="actionColumn"
         render={renderActionColumn}
@@ -49,4 +49,4 @@ const renderActionColumn = () => {
   );
 };
 
-export default SportsPage;
+export default CategoryPage;
