@@ -2,41 +2,57 @@ import { DownOutlined, UserOutlined } from "@ant-design/icons";
 import { Breadcrumb, Dropdown, Layout, Menu, MenuProps, Space } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { Content, Header } from "antd/es/layout/layout";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../hooks";
 import { typeSafeSwitch } from "../../utils/generics";
 import "./MainLayout.css";
 
-const MainLayout: React.FunctionComponent<React.PropsWithChildren> = ({
+const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: string}>> = ({
+  currentKey,
   children,
 }) => {
+  const [keyState, setKeyState] = useState<string>(currentKey); 
   const { setSessionStorage } = useSessionStorage();
   const history = useHistory();
+
   const handleMenuItemClick = useCallback(({ key }: { key: string }) => {
 
     console.log("Clicked", key);
 
-    if (key === "sample") {
+    if (key === "SAMPLE") {
+      setKeyState("SAMPLE")
       history.push("/sample");
     }
 
-    if (key === "sports") {
+    if (key === "SPORTS") {
+      setKeyState("SPORTS")
       history.push("/sports")
     }
 
-    if (key === "categories") {
+    if (key === "CATEGORIES") {
+      setKeyState("CATEGORIES")
       history.push("/categories")
+    }
+
+    if (key === "USERS") {
+      setKeyState("USERS")
+      history.push("/users")
     }
   }, []);
 
   const handleUserMenuItemClick = useCallback(({ key }: { key: string }) => {
-    if (key === "logout") {
+    if (key === "ACCOUNT") {
+      setKeyState("ACCOUNT")
+      history.push("/account")
+    }
+
+    if (key === "LOGOUT") {
       setSessionStorage("");
       history.push("/login");
     }
   }, []);
-  
+
   const menuItems = useMemo<MenuProps["items"]>(
     () =>
       menuItemKeys.map((key) => ({
@@ -83,7 +99,7 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren> = ({
       </Header>
       <Layout>
         <Sider style={{ backgroundColor: "#ffffff" }}>
-          <Menu items={menuItems}></Menu>
+          <Menu items={menuItems} activeKey={keyState}></Menu>
         </Sider>
         <Layout style={{ marginLeft: 8, marginTop: 8 }}>
           <Breadcrumb>
@@ -100,24 +116,31 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren> = ({
 };
 
 type MenuItems =
-  | "sports"
-  | "categories"
-  | "sample"
-type UserMenuItems = "logout";
+  | "SPORTS"
+  | "CATEGORIES"
+  | "USERS"
+  | "SAMPLE";
+
+type UserMenuItems = 
+  | "ACCOUNT"
+  | "LOGOUT";
 
 const menuItemKeys: MenuItems[] = [
-  "sports",
-  "sample",
-  "categories"
+  "SPORTS",
+  "SAMPLE",
+  "CATEGORIES",
+  "USERS"
 ];
 
-const userMenuItemKeys: UserMenuItems[] = ["logout"];
+const userMenuItemKeys: UserMenuItems[] = ["ACCOUNT", "LOGOUT"];
 
 const getNameByMenuKey = typeSafeSwitch<MenuItems | UserMenuItems, string>({
-  sports: "Sports",
-  sample: "Sample",
-  categories: "Categories",
-  logout: "Log out",
+  SPORTS: "Sports",
+  SAMPLE: "Sample",
+  CATEGORIES: "Categories",
+  USERS: "Users",
+  ACCOUNT: "Account",
+  LOGOUT: "Log out",
 });
 
 export default MainLayout;
