@@ -110,6 +110,7 @@ export const getSport = async (token: string, id: number) => {
 }
 
 export const createSport = async (token: string, payload: SportEditPayload) => {
+  console.log(payload)
   const response: AxiosResponse<any, any> = await axios.post(
     `${API_PREFIX}/sports`,
     payload,

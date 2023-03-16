@@ -20,11 +20,6 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: s
 
     console.log("Clicked", key);
 
-    if (key === "SAMPLE") {
-      setKeyState("SAMPLE")
-      history.push("/sample");
-    }
-
     if (key === "SPORTS") {
       setKeyState("SPORTS")
       history.push("/sports")
@@ -118,8 +113,7 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: s
 type MenuItems =
   | "SPORTS"
   | "CATEGORIES"
-  | "USERS"
-  | "SAMPLE";
+  | "USERS";
 
 type UserMenuItems = 
   | "ACCOUNT"
@@ -127,7 +121,6 @@ type UserMenuItems =
 
 const menuItemKeys: MenuItems[] = [
   "SPORTS",
-  "SAMPLE",
   "CATEGORIES",
   "USERS"
 ];
@@ -136,7 +129,6 @@ const userMenuItemKeys: UserMenuItems[] = ["ACCOUNT", "LOGOUT"];
 
 const getNameByMenuKey = typeSafeSwitch<MenuItems | UserMenuItems, string>({
   SPORTS: "Sports",
-  SAMPLE: "Sample",
   CATEGORIES: "Categories",
   USERS: "Users",
   ACCOUNT: "Account",
