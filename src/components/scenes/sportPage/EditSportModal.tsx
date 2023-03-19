@@ -5,6 +5,7 @@ import { SportEditPayload, SportPayload, VariantPayload } from '../../../api/api
 import { createSport, getVariants, updateSport } from '../../../api/api';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
+import ImageUploader from '../../images/ImageUploader';
 
 interface Props extends ModalProps {
     sport: SportPayload
@@ -49,28 +50,6 @@ const EditSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmi
     }
   };
 
-  function sportsContainVariants(sport: SportPayload, variant: VariantPayload) {
-    console.log("Searching");
-    sport.variants.forEach((sportVariant) => {
-      if (sportVariant.id === variant.id) {
-        return true;
-      }
-    });
-    return false;
-  }
-
-  const beforeUpload = (file: RcFile) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('Image must smaller than 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
-  };
-
   useEffect(() => {
     getVariantsData()
   }, []);
@@ -90,6 +69,10 @@ const EditSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmi
         <Form form={form} preserve={false} initialValues={initialValues} onFinish={handleFormSubmit}>
         <Form.Item name="name" rules={[{ required: true, message: 'Missing name for sport!' }]}>
           <Input />
+        </Form.Item>
+
+        <Form.Item name="photoUrl">
+          <ImageUploader></ImageUploader>
         </Form.Item>
 
         <Form.Item label="Variants" name="variantsIds">
