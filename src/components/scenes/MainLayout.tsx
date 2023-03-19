@@ -25,11 +25,6 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: s
       history.push("/sports")
     }
 
-    if (key === "CATEGORIES") {
-      setKeyState("CATEGORIES")
-      history.push("/categories")
-    }
-
     if (key === "USERS") {
       setKeyState("USERS")
       history.push("/users")
@@ -94,7 +89,7 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: s
       </Header>
       <Layout>
         <Sider style={{ backgroundColor: "#ffffff" }}>
-          <Menu items={menuItems} activeKey={keyState}></Menu>
+          <Menu items={menuItems} activeKey={keyState} selectedKeys={[keyState]}></Menu>
         </Sider>
         <Layout style={{ marginLeft: 8, marginTop: 8 }}>
           <Breadcrumb>
@@ -112,7 +107,6 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: s
 
 type MenuItems =
   | "SPORTS"
-  | "CATEGORIES"
   | "USERS";
 
 type UserMenuItems = 
@@ -121,7 +115,6 @@ type UserMenuItems =
 
 const menuItemKeys: MenuItems[] = [
   "SPORTS",
-  "CATEGORIES",
   "USERS"
 ];
 
@@ -129,7 +122,6 @@ const userMenuItemKeys: UserMenuItems[] = ["ACCOUNT", "LOGOUT"];
 
 const getNameByMenuKey = typeSafeSwitch<MenuItems | UserMenuItems, string>({
   SPORTS: "Sports",
-  CATEGORIES: "Categories",
   USERS: "Users",
   ACCOUNT: "Account",
   LOGOUT: "Log out",

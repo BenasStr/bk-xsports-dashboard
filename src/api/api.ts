@@ -150,6 +150,19 @@ export const deleteSport = async (token: string, sportId: number) => {
   );
 }
 
+export const uploadSportImage = async (token: string, sportId: number, image: any) => {
+  const response: AxiosResponse<any, any> = await axios.post(
+    `${API_PREFIX}/sports/${sportId}/image`,
+    image,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+}
+
 // VARIANTS
 export const getVariants = async (token: string) => {
   const response: AxiosResponse<any, any> = await axios.get(
@@ -272,7 +285,7 @@ export const deleteCategory = async (token: string, sportId: number, categoryId:
 }
 
 // TRICKS
-export const getTricks = async (token: string, sportId: string, categoryId: string) => {
+export const getTricks = async (token: string, sportId: number, categoryId: number) => {
   const response: AxiosResponse<any, any> = await axios.get(
     `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks`,
     {
@@ -285,7 +298,20 @@ export const getTricks = async (token: string, sportId: string, categoryId: stri
   return response.data.data
 }
 
-export const getTrick = async (token: string, sportId: string, categoryId: string, trickId: number) => {
+export const getTricksByVariants = async (token: string, sportId: number, categoryId: number, variant: string) => {
+  const response: AxiosResponse<any, any> = await axios.get(
+    `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks?variant=${variant}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data.data
+}
+
+export const getTrick = async (token: string, sportId: number, categoryId: number, trickId: number) => {
   const response: AxiosResponse<any, any> = await axios.get(
     `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}`,
     {
@@ -298,7 +324,7 @@ export const getTrick = async (token: string, sportId: string, categoryId: strin
   return response.data.data
 }
 
-export const createTrick = async (token: string, sportId: string, categoryId: string, trick: TrickEditPayload) => {
+export const createTrick = async (token: string, sportId: number, categoryId: number, trick: TrickEditPayload) => {
   const response: AxiosResponse<any, any> = await axios.post(
     `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks`,
     {
@@ -311,7 +337,7 @@ export const createTrick = async (token: string, sportId: string, categoryId: st
   return response.data.data
 }
 
-export const updateTrick = async (token: string, sportId: string, categoryId: string, trickId: number, trick: TrickEditPayload) => {
+export const updateTrick = async (token: string, sportId: number, categoryId: number, trickId: number, trick: TrickEditPayload) => {
   const response: AxiosResponse<any, any> = await axios.put(
     `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}`,
     {
@@ -324,7 +350,7 @@ export const updateTrick = async (token: string, sportId: string, categoryId: st
   return response.data.data
 }
 
-export const deleteTrick = async (token: string, sportId: string, categoryId: string, trickId: number) => {
+export const deleteTrick = async (token: string, sportId: number, categoryId: number, trickId: number) => {
   const response: AxiosResponse<any, any> = await axios.delete(
     `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}`,
     {
@@ -337,7 +363,7 @@ export const deleteTrick = async (token: string, sportId: string, categoryId: st
   return response.data.data
 }
 
-export const createTrickVariant = async (token: string, sportId: string, categoryId: string, trickId: number, variant: TrickVariantEditPayload) => {
+export const createTrickVariant = async (token: string, sportId: number, categoryId: number, trickId: number, variant: TrickVariantEditPayload) => {
   const response: AxiosResponse<any, any> = await axios.post(
     `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}/variants`,
     {
@@ -350,7 +376,7 @@ export const createTrickVariant = async (token: string, sportId: string, categor
   return response.data.data
 }
 
-export const updateTrickVariant = async (token: string, sportId: string, categoryId: string, trickId: number, variantId: number, variant: TrickVariantEditPayload) => {
+export const updateTrickVariant = async (token: string, sportId: number, categoryId: number, trickId: number, variantId: number, variant: TrickVariantEditPayload) => {
   const response: AxiosResponse<any, any> = await axios.post(
     `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}/variants/${variantId}`,
     {
@@ -363,9 +389,23 @@ export const updateTrickVariant = async (token: string, sportId: string, categor
   return response.data.data
 }
 
-export const deleteTrickVariant = async (token: string, sportId: string, categoryId: string, trickId: number, variantId: number) => {
+export const deleteTrickVariant = async (token: string, sportId: number, categoryId: number, trickId: number, variantId: number) => {
   const response: AxiosResponse<any, any> = await axios.delete(
     `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}/variants/${variantId}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data.data
+}
+
+// DIFFICULTIES
+export const getDifficulties = async (token: string) => {
+  const response: AxiosResponse<any, any> = await axios.get(
+    `${API_PREFIX}/difficulties`,
     {
       headers: {
         "Content-Type": "application/json",

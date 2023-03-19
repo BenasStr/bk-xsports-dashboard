@@ -72,7 +72,6 @@ const SportsPage: React.FunctionComponent = () => {
 
   const handleDeleteClick = async (id: number) => {
       try {
-        console.log("This will call delete");
         setLoadingState(false);
         await deleteSport(sessionStorage?sessionStorage : "", id);
         await getSportsData()

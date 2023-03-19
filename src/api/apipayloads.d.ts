@@ -88,14 +88,20 @@ export interface TrickBasicPayload {
 
 export interface TrickEditPayload {
   name: string;
-  difficulty_id: number;
-  trick_parents_ids: number[];
+  difficultyId: number;
+  trickParentsIds: number[];
   description: string
-  short_description: string
+  shortDescription: string
 }
 
 export interface TrickVariantEditPayload {
   description: string
   short_description: string
   variant_id: number
+}
+
+// Difficulties
+export interface DifficultyPayload {
+  id: number,
+  name: string
 }

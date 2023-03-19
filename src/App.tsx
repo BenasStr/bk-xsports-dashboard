@@ -14,6 +14,9 @@ const App = () => {
         <Route path="/login">
           <LoginPage />
         </Route>
+        <AuthUserGuard path="/sports/:sportId/categories/:categoryId/tricks">
+          <MainProtal portalType="TRICKS" />
+        </AuthUserGuard>
         <AuthUserGuard path="/sports/:sportId/categories">
           <MainProtal portalType="CATEGORIES" />
         </AuthUserGuard>
