@@ -74,7 +74,7 @@ const AddSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
           <Input placeholder='Name'/>
         </Form.Item>
 
-        <Form.Item label="Variants" name="variantIds">
+        <Form.Item label="Variants" name="variantsIds">
           <Checkbox.Group>
             <List
               dataSource={variants}

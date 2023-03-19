@@ -14,7 +14,8 @@ const CategoryPage: React.FunctionComponent = () => {
 
   const getCategoriesData = async () => {
     try {
-      const data: CategoryPayload[] = await getCategories(sessionStorage?sessionStorage:"", 1);
+      const sportId : number = parseInt(history.location.pathname.split("/")[2]);
+      const data: CategoryPayload[] = await getCategories(sessionStorage?sessionStorage:"", sportId);
       setData(data)
     } catch (err) {
       console.log("Failed to reterieve categories")

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Form, Input, Button, Upload, message, List, Checkbox, Modal, ModalProps } from 'antd';
 import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface';
 import { SportEditPayload, SportPayload, VariantPayload } from '../../../api/apipayloads';
@@ -16,6 +16,13 @@ const EditSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmi
   const {sessionStorage} = useSessionStorage();
   const [variants, setVariants] = useState<VariantPayload[]>([]);
   const [standardVariantId, setStandardVariantId] = useState<number>(-1);
+
+  console.log(sport);
+
+  const initialValues = useMemo(() => ({
+    name: sport.name,
+    variantsIds: sport.variants.map((variant) => variant.id)
+  }), [sport])
 
   const getVariantsData = async () => {
     try {
@@ -42,6 +49,16 @@ const EditSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmi
     }
   };
 
+  function sportsContainVariants(sport: SportPayload, variant: VariantPayload) {
+    console.log("Searching");
+    sport.variants.forEach((sportVariant) => {
+      if (sportVariant.id === variant.id) {
+        return true;
+      }
+    });
+    return false;
+  }
+
   const beforeUpload = (file: RcFile) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
@@ -60,7 +77,7 @@ const EditSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmi
 
   return ( !variants ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
 
-    <Modal
+    <Modal destroyOnClose
           open={open}
           onCancel={onCancel}
           footer={null}
@@ -70,21 +87,22 @@ const EditSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmi
         Edit Sport
       </h2>  
 
-        <Form form={form} onFinish={handleFormSubmit}>
-        <Form.Item name="name" initialValue={sport.name} rules={[{ required: true, message: 'Missing name for sport!' }]}>
+        <Form form={form} preserve={false} initialValues={initialValues} onFinish={handleFormSubmit}>
+        <Form.Item name="name" rules={[{ required: true, message: 'Missing name for sport!' }]}>
           <Input />
         </Form.Item>
 
-        <Form.Item label="Variants" name="variantIds">
-          <Checkbox.Group>
-            <List
-              dataSource={variants}
-              renderItem={(variant) => (
-                <List.Item>
-                  <Checkbox value={variant.id}>{variant.name}</Checkbox>
-                </List.Item>
-              )}
-            />
+        <Form.Item label="Variants" name="variantsIds">
+          <Checkbox.Group >
+            <List>
+              {variants.map((variant) => {
+                return (
+                  <List.Item>
+                    <Checkbox key={variant.id} value={variant.id}>{variant.name}</Checkbox>
+                  </List.Item>
+                );
+              })}
+            </List>
           </Checkbox.Group>
         </Form.Item>
 

@@ -47,7 +47,7 @@ export interface SportPayload {
 
 export interface SportEditPayload {
   name: string;
-  variants_ids: number[]
+  variantsIds: number[]
 }
 
 // VARIANTS

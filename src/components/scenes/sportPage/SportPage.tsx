@@ -1,9 +1,9 @@
 import { DeleteOutlined, TagOutlined, TagsFilled } from "@ant-design/icons";
-import { Button, Modal, Space, Table, Tag } from "antd";
+import { Button, Modal, Row, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { deleteSport, getSports } from "../../../api/api";
-import { SportPayload } from "../../../api/apipayloads";
+import { SportEditPayload, SportPayload } from "../../../api/apipayloads";
 import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../../hooks";
 import AddSportModal from "./AddSportModal";
@@ -24,34 +24,35 @@ const SportsPage: React.FunctionComponent = () => {
   const {sessionStorage} = useSessionStorage();
   const history = useHistory();
 
-  const handleOpenAddModal = () => {
+  const handleOpenAddModal = useCallback(() => {
     setIsAddModalVisible(true);
-  };
+  }, []);
 
-  const handleCloseAddModal = () => {
+  const handleCloseAddModal = useCallback(() => {
     setIsAddModalVisible(false);
     setIsEditModalVisible(false);
-  };
+  }, []);
 
-  const handleAddModalSubmit = () => {
+  const handleAddModalSubmit = useCallback(() => {
     setIsAddModalVisible(false);
     getSportsData();
-  } 
+  }, []) 
 
-  const handleOpenEditModal = (sport: SportPayload) => {
+  const handleCloseEditModal = useCallback(() => {
+    setIsAddModalVisible(false);
+    setIsEditModalVisible(false);
+  }, []);
+
+  const handleEditModalSubmit = useCallback(() => {
+    setIsEditModalVisible(false);
+    getSportsData();
+  }, []);
+  
+  const handleEditButtonClick = useCallback((sport: SportPayload) => (event: MouseEvent)  => {
+    event.stopPropagation();
     setSoprtEdit(sport);
     setIsEditModalVisible(true);
-  };
-
-  const handleCloseEditModal = () => {
-    setIsAddModalVisible(false);
-    setIsEditModalVisible(false);
-  };
-
-  const handleEditModalSubmit = () => {
-    setIsEditModalVisible(false);
-    getSportsData();
-  } 
+  }, [])
 
   const getSportsData = async () => {
     try {
@@ -64,6 +65,10 @@ const SportsPage: React.FunctionComponent = () => {
       console.log("Failed to reterieve sports")
     }
   }
+
+  const onRowClick = (sport: SportPayload, event: MouseEvent) => {
+    history.push(`/sports/${sport.id}/categories`);
+  };
 
   const handleDeleteClick = async (id: number) => {
       try {
@@ -81,11 +86,14 @@ const SportsPage: React.FunctionComponent = () => {
     getSportsData()
   }, []);
 
+  // onClick={() => {handleOpenEditModal(sport)}}
+
+
   const renderActionColumn = useCallback((sport: SportPayload) => {
     return (
       <div style={{float: "right"}}>
         <Space>
-          <Button onClick={() => handleOpenEditModal(sport)}>Edit</Button>
+          <Button onClick={handleEditButtonClick(sport)}>Edit</Button>
           <Button>
             <DeleteOutlined onClick={() => handleDeleteClick(sport.id)}/>
           </Button>
@@ -95,8 +103,6 @@ const SportsPage: React.FunctionComponent = () => {
   }, []);
 
   const renderTags = useCallback((sport: SportPayload) => {
-    // console.log("Rendering tags")
-    // console.log(sport)
     return (
       <>
         {sport.variants.map((variant) => {
@@ -110,22 +116,28 @@ const SportsPage: React.FunctionComponent = () => {
     );
   }, []);
 
+  const rowProps = (sport: SportPayload) => {
+    return {
+      onClick: (event: MouseEvent) => {
+        onRowClick(sport, event);
+      },
+    };
+  };
+
   return ( !doneLoading ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
     <div>
       <div style={{marginBottom: '10px'}}>
         <Button onClick={() => handleOpenAddModal()}>+ Add Sport</Button>
       </div>
 
-      <Table dataSource={data} pagination={{ pageSize: 20 }}>
-        <Table.Column key="index" dataIndex="id" title="Index" width={25}/>
-        <Table.Column key="sport" dataIndex="name" title="Sport" />
+      <Table dataSource={data} pagination={{ pageSize: 20 }} onRow={rowProps}>
+        <Table.Column dataIndex="id" title="Index" width={25}/>
+        <Table.Column dataIndex="name" title="Sport"/>
         <Table.Column 
-          key="tags" 
           title="Variants" 
           render={renderTags}
         />
         <Table.Column
-          key="actionColumn"
           render={renderActionColumn}
           fixed="right"
         />
