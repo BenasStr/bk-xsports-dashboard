@@ -23,6 +23,9 @@ const App = () => {
         <AuthUserGuard path="/sports">
           <MainProtal portalType="SPORTS" />
         </AuthUserGuard>
+        <AuthUserGuard path="/variants">
+          <MainProtal portalType="VARIANTS" />
+        </AuthUserGuard>
         <AuthUserGuard path="/users">
           <MainProtal portalType="USERS" />
         </AuthUserGuard>

@@ -56,6 +56,10 @@ export interface VariantPayload {
   name: string;
 }
 
+export interface VariantEditPayload {
+  name: string;
+}
+
 // CATEGORIES
 export interface CategoryPayload {
   id: number;

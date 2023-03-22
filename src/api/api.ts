@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { CategoryEditPayload, LoginPayload, SportEditPayload, TrickEditPayload, TrickVariantEditPayload, UserEditPayload, VariantPayload } from "./apipayloads";
+import { CategoryEditPayload, LoginPayload, SportEditPayload, TrickEditPayload, TrickVariantEditPayload, UserEditPayload, VariantEditPayload, VariantPayload } from "./apipayloads";
 
 const API_PREFIX = "https://app-benasstr.cloud.okteto.net/api";
 
@@ -177,7 +177,7 @@ export const getVariants = async (token: string) => {
   return response.data.data
 }
 
-export const createVariant = async (token: string, payload: VariantPayload) => {
+export const createVariant = async (token: string, payload: VariantEditPayload) => {
   const response: AxiosResponse<any, any> = await axios.post(
     `${API_PREFIX}/variants`,
     payload,
@@ -191,8 +191,8 @@ export const createVariant = async (token: string, payload: VariantPayload) => {
   return response.data.data
 }
 
-export const updateVariant = async (token: string, variantId: number, payload: VariantPayload) => {
-  const response: AxiosResponse<any, any> = await axios.post(
+export const updateVariant = async (token: string, variantId: number, payload: VariantEditPayload) => {
+  const response: AxiosResponse<any, any> = await axios.put(
     `${API_PREFIX}/variants/${variantId}`,
     payload,
     {
@@ -206,7 +206,7 @@ export const updateVariant = async (token: string, variantId: number, payload: V
 }
 
 export const deleteVariant = async (token: string, variantId: number) => {
-  const response: AxiosResponse<any, any> = await axios.post(
+  const response: AxiosResponse<any, any> = await axios.delete(
     `${API_PREFIX}/variants/${variantId}`,
     {
       headers: {
@@ -287,7 +287,7 @@ export const deleteCategory = async (token: string, sportId: number, categoryId:
 // TRICKS
 export const getTricks = async (token: string, sportId: number, categoryId: number) => {
   const response: AxiosResponse<any, any> = await axios.get(
-    `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks`,
+    `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks?extended=true`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -327,6 +327,7 @@ export const getTrick = async (token: string, sportId: number, categoryId: numbe
 export const createTrick = async (token: string, sportId: number, categoryId: number, trick: TrickEditPayload) => {
   const response: AxiosResponse<any, any> = await axios.post(
     `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks`,
+    trick,
     {
       headers: {
         "Content-Type": "application/json",
