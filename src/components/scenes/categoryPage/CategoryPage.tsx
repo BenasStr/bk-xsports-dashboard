@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Space, Table } from "antd";
+import { Button, message, Space, Table } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { deleteCategory, getCategories } from "../../../api/api";
@@ -10,13 +10,13 @@ import AddCategoryModal from "./AddCategoryModal";
 import EditCategoryModal from "./EditCategoryModal";
 
 const CategoryPage: React.FunctionComponent = () => {
+  const history = useHistory();
+  const [sportId] = useState<number>(parseInt(history.location.pathname.split("/")[2]));
   const [data, setData] = useState<CategoryPayload[]>();
   const [doneLoading, setLoadingState] = useState<boolean>(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
-  const history = useHistory();
-  const [sportId] = useState<number>(parseInt(history.location.pathname.split("/")[2]));
-  const {sessionStorage} = useSessionStorage();
+  const { sessionStorage } = useSessionStorage();
   const [categoryEdit, setCategoryEdit] = useState<CategoryPayload>({
     id: 0,
     name: '',
@@ -24,14 +24,14 @@ const CategoryPage: React.FunctionComponent = () => {
   });
 
   const getCategoriesData = async () => {
+    setLoadingState(false);
     try {
-      setLoadingState(false);
-      const data: CategoryPayload[] = await getCategories(sessionStorage?sessionStorage:"", sportId);
+      const data: CategoryPayload[] = await getCategories(sessionStorage ? sessionStorage : "", sportId);
       setData(data)
-      setLoadingState(true);
     } catch (err) {
-      console.log("Failed to reterieve categories")
+      message.error("Failed to reterieve categories!");
     }
+    setLoadingState(true);
   }
 
   const handleOpenAddModal = useCallback(() => {
@@ -58,22 +58,24 @@ const CategoryPage: React.FunctionComponent = () => {
     getCategoriesData();
   }, []);
 
-  const handleEditButtonClick = useCallback((category: CategoryPayload) => (event: MouseEvent)  => {
+  const handleEditButtonClick = useCallback((category: CategoryPayload) => (event: MouseEvent) => {
     event.stopPropagation();
     setCategoryEdit(category);
     setIsEditModalVisible(true);
   }, [])
 
-  const handleDeleteClick = async (id: number) => {
+  const handleDeleteClick = useCallback((id: number) => async (event: MouseEvent) => {
+    setLoadingState(false);
+    event.stopPropagation();
     try {
-      setLoadingState(false);
-      await deleteCategory(sessionStorage?sessionStorage : "", sportId, id);
-      await getCategoriesData()
-      setLoadingState(true)
-    } catch(err) {
-      console.log("Unable to delete");
+      await deleteCategory(sessionStorage ? sessionStorage : "", sportId, id);
+      await getCategoriesData();
+      message.success("Deleted category!");
+    } catch (err) {
+      message.error("Delete failed!");
     }
-  }
+    setLoadingState(true)
+  }, []);
 
   const onRowClick = (category: CategoryPayload, event: MouseEvent) => {
     history.push(`/sports/${sportId}/categories/${category.id}/tricks`);
@@ -94,24 +96,24 @@ const CategoryPage: React.FunctionComponent = () => {
 
   const renderActionColumn = useCallback((category: CategoryPayload) => {
     return (
-      <div style={{float: "right"}}>
+      <div style={{ float: "right" }}>
         <Space>
           <Button onClick={handleEditButtonClick(category)}>Edit</Button>
           <Button>
-            <DeleteOutlined onClick={() => handleDeleteClick(category.id)}/>
+            <DeleteOutlined onClick={handleDeleteClick(category.id)} />
           </Button>
         </Space>
       </div>
     );
   }, []);
 
-  return ( !doneLoading ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
+  return (!doneLoading ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
     <div>
-      <div style={{marginBottom: '10px'}}>
+      <div style={{ marginBottom: '10px' }}>
         <Button onClick={() => handleOpenAddModal()}>+ Add Category</Button>
       </div>
       <Table dataSource={data} pagination={{ pageSize: 20 }} onRow={rowProps}>
-        <Table.Column key="index" dataIndex="id" title="Index" width={25}/>
+        <Table.Column key="index" dataIndex="id" title="Index" width={25} />
         <Table.Column key="category" dataIndex="name" title="Category" />
         <Table.Column
           key="actionColumn"
@@ -119,9 +121,9 @@ const CategoryPage: React.FunctionComponent = () => {
           fixed="right"
         />
       </Table>
- 
-      <AddCategoryModal open={isAddModalVisible} onCancel={handleCloseAddModal} onSubmit={handleAddModalSubmit} sportId={sportId}/>
-      <EditCategoryModal open={isEditModalVisible} onCancel={handleCloseEditModal} onSubmit={handleEditModalSubmit} category={categoryEdit} sportId={sportId}/>
+
+      <AddCategoryModal open={isAddModalVisible} onCancel={handleCloseAddModal} onSubmit={handleAddModalSubmit} sportId={sportId} />
+      <EditCategoryModal open={isEditModalVisible} onCancel={handleCloseEditModal} onSubmit={handleEditModalSubmit} category={categoryEdit} sportId={sportId} />
     </div>
   );
 };
