@@ -1,24 +1,20 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Form, Input, Button, Upload, message, List, Checkbox, Modal, ModalProps } from 'antd';
-import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface';
+import { Form, Input, Button, message, List, Checkbox, Modal, ModalProps } from 'antd';
 import { SportEditPayload, SportPayload, VariantPayload } from '../../../api/apipayloads';
-import { createSport, getVariants, updateSport } from '../../../api/api';
+import { getVariants, updateSport } from '../../../api/api';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import ImageUploader from '../../images/ImageUploader';
 
 interface Props extends ModalProps {
-    sport: SportPayload
-    onSubmit: () => void;
+  sport: SportPayload;
+  onSubmit: () => void;
 }
 
-const EditSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit, sport}) => {
+const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sport }) => {
   const [form] = Form.useForm<SportEditPayload>();
-  const {sessionStorage} = useSessionStorage();
+  const { sessionStorage } = useSessionStorage();
   const [variants, setVariants] = useState<VariantPayload[]>([]);
-  const [standardVariantId, setStandardVariantId] = useState<number>(-1);
-
-  console.log(sport);
 
   const initialValues = useMemo(() => ({
     name: sport.name,
@@ -27,74 +23,73 @@ const EditSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmi
 
   const getVariantsData = async () => {
     try {
-      const data: VariantPayload[] = await getVariants(sessionStorage?sessionStorage:"");
+      const data: VariantPayload[] = await getVariants(sessionStorage ? sessionStorage : "");
       data.forEach((variant) => {
         if (variant.name === "Standard") {
-          setStandardVariantId(variant.id);
           data.splice(data.indexOf(variant), 1)
         }
       });
-      setVariants(data)
+      setVariants(data);
     } catch (err) {
-      console.log("Failed to reterieve variants")
+      message.error("Failed to retrieve variants!");
     }
   }
 
   const handleFormSubmit = async (values: SportEditPayload) => {
     try {
-      console.log(values);
-      await updateSport(sessionStorage?sessionStorage:"", sport.id, values);
-      onSubmit()
+      await updateSport(sessionStorage ? sessionStorage : "", sport.id, values);
+      message.success("Updated sport!");
+      onSubmit();
     } catch (err) {
-      console.log("Failed to create sport") 
+      message.error("Failed to update sport!");
     }
   };
 
   useEffect(() => {
-    getVariantsData()
+    getVariantsData();
   }, []);
 
-  return ( !variants ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
+  return (!variants ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
 
     <Modal destroyOnClose
-          open={open}
-          onCancel={onCancel}
-          footer={null}
-        > 
-      <div style={{padding: '16px'}}>
-      <h2>
-        Edit Sport
-      </h2>  
+      open={open}
+      onCancel={onCancel}
+      footer={null}
+    >
+      <div style={{ padding: '16px' }}>
+        <h2>
+          Edit Sport
+        </h2>
 
         <Form form={form} preserve={false} initialValues={initialValues} onFinish={handleFormSubmit}>
-        <Form.Item name="name" rules={[{ required: true, message: 'Missing name for sport!' }]}>
-          <Input />
-        </Form.Item>
+          <Form.Item name="name" rules={[{ required: true, message: 'Missing name for sport!' }]}>
+            <Input />
+          </Form.Item>
 
-        <Form.Item name="photoUrl">
-          <ImageUploader></ImageUploader>
-        </Form.Item>
+          <Form.Item name="photoUrl">
+            <ImageUploader></ImageUploader>
+          </Form.Item>
 
-        <Form.Item label="Variants" name="variantsIds">
-          <Checkbox.Group >
-            <List>
-              {variants.map((variant) => {
-                return (
-                  <List.Item>
-                    <Checkbox key={variant.id} value={variant.id}>{variant.name}</Checkbox>
-                  </List.Item>
-                );
-              })}
-            </List>
-          </Checkbox.Group>
-        </Form.Item>
+          <Form.Item label="Variants" name="variantsIds">
+            <Checkbox.Group >
+              <List>
+                {variants.map((variant) => {
+                  return (
+                    <List.Item>
+                      <Checkbox key={variant.id} value={variant.id}>{variant.name}</Checkbox>
+                    </List.Item>
+                  );
+                })}
+              </List>
+            </Checkbox.Group>
+          </Form.Item>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
+          </Form.Item>
+        </Form>
       </div>
     </Modal>
   );

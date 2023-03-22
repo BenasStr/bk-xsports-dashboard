@@ -1,9 +1,9 @@
-import { DeleteOutlined, TagOutlined, TagsFilled } from "@ant-design/icons";
-import { Button, Modal, Row, Space, Table, Tag } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
+import { Button, message, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
-import { deleteSport, getSports } from "../../../api/api";
-import { SportEditPayload, SportPayload } from "../../../api/apipayloads";
+import { deleteSport, getSports, getVariants } from "../../../api/api";
+import { SportPayload, VariantPayload } from "../../../api/apipayloads";
 import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../../hooks";
 import AddSportModal from "./AddSportModal";
@@ -11,18 +11,18 @@ import EditSportModal from "./EditSportModal";
 
 
 const SportsPage: React.FunctionComponent = () => {
-  const [data, setData] = useState<SportPayload[]>();
+  const [sports, setSports] = useState<SportPayload[]>();
   const [doneLoading, setLoadingState] = useState<boolean>(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
+  const {sessionStorage} = useSessionStorage();
+  const history = useHistory();
   const [sportEdit, setSoprtEdit] = useState<SportPayload>({
     id: 0,
     name: '',
     photo_url: '',
     variants: []
   });
-  const {sessionStorage} = useSessionStorage();
-  const history = useHistory();
 
   const handleOpenAddModal = useCallback(() => {
     setIsAddModalVisible(true);
@@ -47,22 +47,13 @@ const SportsPage: React.FunctionComponent = () => {
     setIsEditModalVisible(false);
     getSportsData();
   }, []);
-  
-  const handleEditButtonClick = useCallback((sport: SportPayload) => (event: MouseEvent)  => {
-    event.stopPropagation();
-    setSoprtEdit(sport);
-    setIsEditModalVisible(true);
-  }, [])
 
   const getSportsData = async () => {
     try {
-      setLoadingState(false);
       const data: SportPayload[] = await getSports(sessionStorage?sessionStorage:"");
-      setData(data);
-      console.log(data);
-      setLoadingState(true);
+      setSports(data);
     } catch (err) {
-      console.log("Failed to reterieve sports")
+      message.error("Failed to reterieve sports!")
     }
   }
 
@@ -70,23 +61,30 @@ const SportsPage: React.FunctionComponent = () => {
     history.push(`/sports/${sport.id}/categories`);
   };
 
-  const handleDeleteClick = async (id: number) => {
-      try {
-        setLoadingState(false);
-        await deleteSport(sessionStorage?sessionStorage : "", id);
-        await getSportsData()
-        setLoadingState(true)
-      } catch(err) {
-        console.log("Unable to delete");
-      }
-  }
-
-  useEffect(() => {
-    getSportsData()
+  const handleEditButtonClick = useCallback((sport: SportPayload) => (event: MouseEvent)  => {
+    event.stopPropagation();
+    setSoprtEdit(sport);
+    setIsEditModalVisible(true);
   }, []);
 
-  // onClick={() => {handleOpenEditModal(sport)}}
+  const handleDeleteClick = useCallback((id: number) => async (event: MouseEvent) => {
+    event.stopPropagation();
+    setLoadingState(false);
+      try {
+        await deleteSport(sessionStorage?sessionStorage : "", id);
+        message.success("Deleted sport!")
+      } catch(err) {
+        message.error("Unable to delete sport!")
+      }
+      await getSportsData()
+      setLoadingState(true)
+  }, []);
 
+  useEffect(() => {
+    setLoadingState(false);
+    getSportsData();
+    setLoadingState(true);
+  }, []);
 
   const renderActionColumn = useCallback((sport: SportPayload) => {
     return (
@@ -94,7 +92,7 @@ const SportsPage: React.FunctionComponent = () => {
         <Space>
           <Button onClick={handleEditButtonClick(sport)}>Edit</Button>
           <Button>
-            <DeleteOutlined onClick={() => handleDeleteClick(sport.id)}/>
+            <DeleteOutlined onClick={handleDeleteClick(sport.id)}/>
           </Button>
         </Space>
       </div>
@@ -129,7 +127,7 @@ const SportsPage: React.FunctionComponent = () => {
         <Button onClick={() => handleOpenAddModal()}>+ Add Sport</Button>
       </div>
 
-      <Table dataSource={data} pagination={{ pageSize: 20 }} onRow={rowProps}>
+      <Table dataSource={sports} pagination={{ pageSize: 20 }} onRow={rowProps}>
         <Table.Column dataIndex="id" title="Index" width={25}/>
         <Table.Column dataIndex="name" title="Sport"/>
         <Table.Column 
