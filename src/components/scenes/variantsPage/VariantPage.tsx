@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, message, Space, Table } from "antd";
+import { Button, message, Popconfirm, Space, Table } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { deleteVariant, getVariants } from "../../../api/api";
@@ -82,9 +82,18 @@ const VariantPage: React.FunctionComponent = () => {
       <div style={{float: "right"}}>
         <Space>
           <Button onClick={handleEditButtonClick(variant)}>Edit</Button>
-          <Button>
-            <DeleteOutlined onClick={() => handleDeleteClick(variant.id)}/>
-          </Button>
+
+          <Popconfirm
+            placement="topRight"
+            title={"Delete this variant?"}
+            onConfirm={() => handleDeleteClick(variant.id)}
+            okText="Yes"
+            cancelText="Cancel"
+          >
+            <Button>
+              <DeleteOutlined/>
+            </Button>
+          </Popconfirm>
         </Space>
       </div>
     );

@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Space, Table } from "antd";
+import { Button, message, Popconfirm, Space, Table } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { deleteSport, getDifficulties, getTricks } from "../../../api/api";
@@ -19,21 +19,20 @@ interface Trick {
 const TricksPage: React.FunctionComponent = () => {
   const [data, setData] = useState<TrickPayload[]>([]);
   const [tricks, setTricks] = useState<Trick[]>([]);
+  const [difficulties, setDifficulties] = useState<DifficultyPayload[]>([]);
   const [doneLoading, setLoadingState] = useState<boolean>(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
   const history = useHistory();
   const [sportId] = useState<number>(parseInt(history.location.pathname.split("/")[2]));
   const [categoryId] = useState<number>(parseInt(history.location.pathname.split("/")[4]));
-  const [trickEdit, setTrickEdit] = useState<TrickEditPayload>({
-    name: '',
-    difficultyId: 0,
-    trickParentsIds: [],
-    description: '',
-    shortDescription: ''
-  });
-  const [difficulties, setDifficulties] = useState<DifficultyPayload[]>([]);
-  const {sessionStorage} = useSessionStorage();
+  // const [trickEdit, setTrickEdit] = useState<TrickPayload>({
+  //   name: '',
+  //   trickParentsIds: [],
+  //   description: '',
+  //   shortDescription: ''
+  // });
+  const { sessionStorage } = useSessionStorage();
 
   const handleOpenAddModal = useCallback(() => {
     setIsAddModalVisible(true);
@@ -47,7 +46,7 @@ const TricksPage: React.FunctionComponent = () => {
   const handleAddModalSubmit = useCallback(() => {
     setIsAddModalVisible(false);
     getTricksData();
-  }, []) 
+  }, [])
 
   const handleCloseEditModal = useCallback(() => {
     setIsAddModalVisible(false);
@@ -58,8 +57,8 @@ const TricksPage: React.FunctionComponent = () => {
     setIsEditModalVisible(false);
     getTricksData();
   }, []);
-  
-  const handleEditButtonClick = useCallback((trick: TrickPayload) => (event: MouseEvent)  => {
+
+  const handleEditButtonClick = useCallback((trick: TrickPayload) => (event: MouseEvent) => {
     event.stopPropagation();
     // setTrickEdit(trick);
     setIsEditModalVisible(true);
@@ -68,13 +67,14 @@ const TricksPage: React.FunctionComponent = () => {
   const getTricksData = async () => {
     try {
       setLoadingState(false);
-      const data: TrickPayload[] = await getTricks(sessionStorage?sessionStorage:"", sportId, categoryId);
+      const data: TrickPayload[] = await getTricks(sessionStorage ? sessionStorage : "", sportId, categoryId);
       setData(data);
       console.log(data)
       setTricks(data.map((entry) => convertTrickPayload(entry)))
       setLoadingState(true);
     } catch (err) {
-      console.log("Failed to reterieve tricks")
+      console.log(err);
+      message.error("Failed to reterieve tricks!");
     }
   }
 
@@ -91,23 +91,31 @@ const TricksPage: React.FunctionComponent = () => {
 
   const getDifficultiesData = async () => {
     try {
-      const data: DifficultyPayload[] = await getDifficulties(sessionStorage?sessionStorage:"");
+      const data: DifficultyPayload[] = await getDifficulties(sessionStorage ? sessionStorage : "");
       setDifficulties(data);
     } catch (err) {
       console.log("Failed to reterieve difficulties");
     }
   }
 
-  const handleDeleteClick = async (id: number) => {
-      try {
-        setLoadingState(false);
-        await deleteSport(sessionStorage?sessionStorage : "", id);
-        await getTricksData()
-        setLoadingState(true)
-      } catch(err) {
-        console.log("Unable to delete");
-      }
-  }
+  const handleAddVariantClick = useCallback(() => async(event: MouseEvent) => {
+    event.stopPropagation();
+    message.info("Well this is clicked...")
+  }, [])
+
+  const handleDeleteClick = useCallback((id: number) => async (event: MouseEvent) => {
+    event.stopPropagation();
+    setLoadingState(false);
+    try {
+      await deleteSport(sessionStorage ? sessionStorage : "", id);
+      message.success("Deleted trick!");
+    } catch (err) {
+      console.log(err);
+      message.error("Failed to delete trick!");
+    }
+    await getTricksData();
+    setLoadingState(true)
+  }, [])
 
   useEffect(() => {
     getTricksData()
@@ -117,45 +125,61 @@ const TricksPage: React.FunctionComponent = () => {
 
   const renderActionColumn = useCallback((trick: TrickPayload) => {
     return (
-      <div style={{float: "right"}}>
+      <div style={{ float: "right" }}>
         <Space>
-          <Button onClick={handleEditButtonClick(trick)}>Edit</Button>
-          <Button>
-            <DeleteOutlined onClick={() => handleDeleteClick(trick.id)}/>
+          <Button onClick={handleAddVariantClick()}>
+            + Add Variant
           </Button>
+
+          <Button onClick={handleEditButtonClick(trick)}>
+            Edit
+          </Button>
+
+          <Popconfirm
+            onClick={(e: MouseEvent) => e.stopPropagation()}
+            placement="topRight"
+            title={"Delete this variant?"}
+            onConfirm={handleDeleteClick(trick.id)}
+            okText="Yes"
+            cancelText="Cancel"
+          >
+            <Button>
+              <DeleteOutlined/>
+            </Button>
+          </Popconfirm>
         </Space>
       </div>
     );
   }, []);
 
-  return ( 
+  return (
     !doneLoading ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
-    <div>
-      <div style={{marginBottom: '10px'}}>
-        <Button onClick={() => handleOpenAddModal()}>+ Add Trick</Button>
-      </div>
+      <div>
+        <div style={{ marginBottom: '10px' }}>
+          <Button onClick={() => handleOpenAddModal()}>+ Add Trick</Button>
+        </div>
 
-      <Table dataSource={tricks} pagination={{ pageSize: 20 }}>
-        <Table.Column dataIndex="id" title="Index" width={25}/>
-        <Table.Column dataIndex="name" title="Trick"/>
-        <Table.Column dataIndex="difficulty" title="Difficulty"/>
-        <Table.Column
-          render={renderActionColumn}
-          fixed="right"
+        <Table dataSource={tricks} pagination={{ pageSize: 20 }}>
+          <Table.Column dataIndex="id" title="Index" width={25} />
+          <Table.Column dataIndex="name" title="Trick" />
+          <Table.Column dataIndex="difficulty" title="Difficulty" />
+          <Table.Column
+            render={renderActionColumn}
+            fixed="right"
+          />
+        </Table>
+
+        <AddTrickModal
+          open={isAddModalVisible}
+          onCancel={handleCloseAddModal}
+          onSubmit={handleAddModalSubmit}
+          sportId={sportId}
+          categoryId={categoryId}
+          tricks={data}
+          difficulties={difficulties}
         />
-      </Table>
-
-      <AddTrickModal 
-        open={isAddModalVisible} 
-        onCancel={handleCloseAddModal}
-        onSubmit={handleAddModalSubmit} 
-        sportId={sportId} 
-        categoryId={categoryId} 
-        tricks={data} 
-        difficulties={difficulties}
-      />
-      {/* <EditSportModal open={isEditModalVisible} onCancel={handleCloseEditModal} onSubmit={handleEditModalSubmit} sport={sportEdit}/> */}
-    </div>
+        {/* <EditSportModal open={isEditModalVisible} onCancel={handleCloseEditModal} onSubmit={handleEditModalSubmit} sport={sportEdit}/> */}
+      </div>
   );
 };
 

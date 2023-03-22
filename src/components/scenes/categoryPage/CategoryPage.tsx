@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, message, Space, Table } from "antd";
+import { Button, message, Popconfirm, Space, Table } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { deleteCategory, getCategories } from "../../../api/api";
@@ -65,8 +65,8 @@ const CategoryPage: React.FunctionComponent = () => {
   }, [])
 
   const handleDeleteClick = useCallback((id: number) => async (event: MouseEvent) => {
-    setLoadingState(false);
     event.stopPropagation();
+    setLoadingState(false);
     try {
       await deleteCategory(sessionStorage ? sessionStorage : "", sportId, id);
       await getCategoriesData();
@@ -98,10 +98,22 @@ const CategoryPage: React.FunctionComponent = () => {
     return (
       <div style={{ float: "right" }}>
         <Space>
-          <Button onClick={handleEditButtonClick(category)}>Edit</Button>
-          <Button>
-            <DeleteOutlined onClick={handleDeleteClick(category.id)} />
+          <Button onClick={handleEditButtonClick(category)}>
+            Edit
           </Button>
+
+          <Popconfirm
+            onClick={(e: MouseEvent) => e.stopPropagation()}
+            placement="topRight"
+            title={"Delete this variant?"}
+            onConfirm={handleDeleteClick(category.id)}
+            okText="Yes"
+            cancelText="Cancel"
+          >
+            <Button>
+              <DeleteOutlined/>
+            </Button>
+          </Popconfirm>
         </Space>
       </div>
     );

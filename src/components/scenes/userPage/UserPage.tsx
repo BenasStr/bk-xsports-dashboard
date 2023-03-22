@@ -1,10 +1,9 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Space, Table } from "antd";
+import { Button, Popconfirm, Space, Table } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useEffect, useState } from "react";
 import { getUsers } from "../../../api/api";
-import { UsersPage, UserPayload } from "../../../api/apipayloads";
-import { useHistory } from "react-router-dom";
+import { UsersPage } from "../../../api/apipayloads";
 import { useSessionStorage } from "../../../hooks";
 
 const UserPage: React.FunctionComponent = () => {
@@ -43,9 +42,17 @@ const renderActionColumn = () => {
     <div style={{float: "right"}}>
       <Space>
         <Button>Edit</Button>
-        <Button>
-          <DeleteOutlined />
-        </Button>
+        <Popconfirm
+            placement="topRight"
+            title={"Delete this variant?"}
+            // onConfirm={() => handleDeleteClick(variant.id)}
+            okText="Yes"
+            cancelText="Cancel"
+          >
+            <Button>
+              <DeleteOutlined/>
+            </Button>
+          </Popconfirm>
       </Space>
     </div>
   );

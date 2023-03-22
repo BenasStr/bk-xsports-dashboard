@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, message, Space, Table, Tag } from "antd";
+import { Button, message, Popconfirm, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { deleteSport, getSports, getVariants } from "../../../api/api";
@@ -90,10 +90,22 @@ const SportsPage: React.FunctionComponent = () => {
     return (
       <div style={{float: "right"}}>
         <Space>
-          <Button onClick={handleEditButtonClick(sport)}>Edit</Button>
-          <Button>
-            <DeleteOutlined onClick={handleDeleteClick(sport.id)}/>
+          <Button onClick={handleEditButtonClick(sport)}>
+            Edit
           </Button>
+
+          <Popconfirm
+            onClick={(e: MouseEvent) => e.stopPropagation()}
+            placement="topRight"
+            title={"Delete this variant?"}
+            onConfirm={handleDeleteClick(sport.id)}
+            okText="Yes"
+            cancelText="Cancel"
+          >
+            <Button>
+              <DeleteOutlined/>
+            </Button>
+          </Popconfirm>
         </Space>
       </div>
     );
