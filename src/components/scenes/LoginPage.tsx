@@ -19,18 +19,16 @@ const LoginPage: React.FunctionComponent = () => {
   const authed = !!sessionStorage;
 
   const onFinish = useCallback(async (formData: FormValues) => {
-    console.log("formData", formData);
     try {
       const data: Token = await login(formData);
       setSessionStorage(data.token);
-      console.log(data)
     } catch (err) {
       Promise.reject("credentials");
     }
   }, []);
 
   if (authed) {
-    history.push("/");
+    history.push("/sports");
   }
 
   return (

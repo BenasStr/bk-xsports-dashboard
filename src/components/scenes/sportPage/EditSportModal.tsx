@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Form, Input, Button, message, List, Checkbox, Modal, ModalProps } from 'antd';
+import { Form, Input, Button, message, List, Checkbox, Modal, ModalProps, Image } from 'antd';
 import { SportEditPayload, SportPayload, VariantPayload } from '../../../api/apipayloads';
-import { getVariants, updateSport } from '../../../api/api';
+import { getImage, getVariants, updateSport } from '../../../api/api';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import ImageUploader from '../../images/ImageUploader';
+import axios from 'axios';
 
 interface Props extends ModalProps {
   sport: SportPayload;
@@ -12,9 +13,11 @@ interface Props extends ModalProps {
 }
 
 const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sport }) => {
+  console.log(sport)
   const [form] = Form.useForm<SportEditPayload>();
   const { sessionStorage } = useSessionStorage();
   const [variants, setVariants] = useState<VariantPayload[]>([]);
+  const [image, setImage] = useState<string | null>(null);
 
   const initialValues = useMemo(() => ({
     name: sport.name,
@@ -35,6 +38,38 @@ const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
     }
   }
 
+  const loadImage = async () => {
+    if(!open) {
+      return;
+    }
+    try {
+      const data = await getImage(sessionStorage ? sessionStorage : "", sport.photo);
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImage(reader.result as string);
+      }
+      reader.readAsDataURL(data)
+    } catch(err) {
+      console.log(err);
+      message.error("Failed to retrieve image!");
+    }
+  }
+  // const fetchImage = async () => {
+  //   try {
+  //     const headers = {
+  //       'Authorization': `Bearer ${sessionStorage?sessionStorage:""}`
+  //     };
+  //     const response = await axios.get(sport.photoUrl, { headers });
+  //     const blob = await response.data.blob();
+  //     const url = URL.createObjectURL(blob);
+  //     setImage(url);
+  //     console.log(url);
+  //   } catch (error) {
+  //     console.log(error)
+  //     message.error('Error fetching image');
+  //   }
+  // };
+
   const handleFormSubmit = async (values: SportEditPayload) => {
     try {
       await updateSport(sessionStorage ? sessionStorage : "", sport.id, values);
@@ -47,7 +82,10 @@ const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
 
   useEffect(() => {
     getVariantsData();
-  }, []);
+    if(open) {
+      loadImage();
+    }
+  }, [open]);
 
   return (!variants ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
 
@@ -65,6 +103,10 @@ const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
           <Form.Item name="name" rules={[{ required: true, message: 'Missing name for sport!' }]}>
             <Input />
           </Form.Item>
+
+          {/* <Image
+            src={sport.photo}
+          /> */}
 
           <Form.Item name="photoUrl">
             <ImageUploader></ImageUploader>

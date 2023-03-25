@@ -110,7 +110,6 @@ export const getSport = async (token: string, id: number) => {
 }
 
 export const createSport = async (token: string, payload: SportEditPayload) => {
-  console.log(payload)
   const response: AxiosResponse<any, any> = await axios.post(
     `${API_PREFIX}/sports`,
     payload,
@@ -367,6 +366,7 @@ export const deleteTrick = async (token: string, sportId: number, categoryId: nu
 export const createTrickVariant = async (token: string, sportId: number, categoryId: number, trickId: number, variant: TrickVariantEditPayload) => {
   const response: AxiosResponse<any, any> = await axios.post(
     `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}/variants`,
+    variant,
     {
       headers: {
         "Content-Type": "application/json",
@@ -418,5 +418,17 @@ export const getDifficulties = async (token: string) => {
 }
 
 // IMAGE
+export const getImage = async (token: string, url: string) => {
+  const response: AxiosResponse<any, any> = await axios.get(
+    url,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+  return response.data;
+}
 
 // VIDEO

@@ -41,7 +41,7 @@ export interface UserEditPayload {
 export interface SportPayload {
   id: number
   name: string;
-  photo_url: string;
+  photo: string;
   variants: VariantPayload[];
 }
 

@@ -1,13 +1,9 @@
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import LoginPage from "./components/scenes/LoginPage";
 import AuthUserGuard from "./controls/AuthUserGuard";
-import axios from "axios";
-import MainLayout from "./components/scenes/MainLayout";
 import MainProtal from "./components/scenes/MainPortal";
-import AccountPage from "./components/scenes/userPage/AccountPage";
 
 const App = () => {
-  // axios.get("https://app-benasstr.cloud.okteto.net/api/health");
   return (
     <BrowserRouter>
       <Switch>
@@ -33,7 +29,7 @@ const App = () => {
           <MainProtal portalType="ACCOUNT"/>
         </AuthUserGuard>
         <AuthUserGuard path="/">
-          <MainProtal portalType="?" />
+          <MainProtal portalType="SPORTS"/>
         </AuthUserGuard>
       </Switch>
     </BrowserRouter>

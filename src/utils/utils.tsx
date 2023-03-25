@@ -22,54 +22,40 @@ export function rotateSize(width: number, height: number, rotation: number) {
   };
 }
 
-export default async function getCroppedImg(
-  imageSrc: string,
-  pixelCrop: { x: number; y: number; width: number; height: number },
-  rotation = 0,
-  flip = { horizontal: false, vertical: false }
-): Promise<string | null> {
-  const image = await createImage(imageSrc);
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+export const getCroppedImg = (imageSrc: string, pixelCrop: { x: number; y: number; width: number; height: number },) => {
+  const img = new Image();
+  img.src = imageSrc;
 
-  if (!ctx) {
-    return null;
-  }
+  return new Promise<Blob>((resolve, reject) => {
+    img.onload = () => {
+      const canvas = document.createElement("canvas")
+      const ctx = canvas.getContext("2d")
 
-  const rotRad = getRadianAngle(rotation);
+      if (!ctx) {
+      reject(new Error("Bruh"))
+      throw new Error("Bruh")
+      }
 
-  const { width: bBoxWidth, height: bBoxHeight } = rotateSize(
-    image.width,
-    image.height,
-    rotation
-  );
+      ctx.canvas.height = pixelCrop.height
+      ctx.canvas.width = pixelCrop.width
 
-  // set canvas size to match the bounding box
-  canvas.width = bBoxWidth;
-  canvas.height = bBoxHeight;
+      ctx.drawImage(
+        img, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height
+      )
 
-  ctx.translate(bBoxWidth / 2, bBoxHeight / 2);
-  ctx.rotate(rotRad);
-  ctx.scale(flip.horizontal ? -1 : 1, flip.vertical ? -1 : 1);
-  ctx.translate(-image.width / 2, -image.height / 2);
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error("Bruh 2"));
+          throw new Error("Bruh 2")
+        }
 
-  ctx.drawImage(image, 0, 0);
+        resolve(blob)
 
-  const data = ctx.getImageData(
-    pixelCrop.x,
-    pixelCrop.y,
-    pixelCrop.width,
-    pixelCrop.height
-  );
+      }, "image/jpeg")
+    }
+    img.onerror = () => {
 
-  canvas.width = pixelCrop.width;
-  canvas.height = pixelCrop.height;
-
-  ctx.putImageData(data, 0, 0);
-
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((file) => {
-      resolve(URL.createObjectURL(file as Blob));
-    }, "image/jpeg");
-  });
+      reject(new Error("Bruh 3"))
+    }
+  })
 }

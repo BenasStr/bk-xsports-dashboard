@@ -12,8 +12,7 @@ type PortalType =
 | "TRICKS"
 | "VARIANTS"
 | "USERS" 
-| "ACCOUNT"
-| "?";
+| "ACCOUNT";
 
 interface Props {
   portalType: PortalType;
@@ -26,7 +25,6 @@ const MainPrortal: React.FunctionComponent<React.PropsWithChildren<Props>> = ({
   console.log("Render", portalType);
   return (
     <MainLayout currentKey={portalType}>
-      {portalType === "?" && <>?</>}
       {portalType === "SPORTS" && <SportPage/>}
       {portalType === "CATEGORIES" && <CategoryPage/>}
       {portalType === "TRICKS" && <TricksPage/>}

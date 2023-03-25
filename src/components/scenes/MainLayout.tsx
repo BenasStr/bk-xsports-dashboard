@@ -13,12 +13,11 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: s
   children,
 }) => {
   const [keyState, setKeyState] = useState<string>(currentKey); 
+  const [breadcrumbs, setBreadCrumbs] = useState<string[]>([]);
   const { setSessionStorage } = useSessionStorage();
   const history = useHistory();
 
   const handleMenuItemClick = useCallback(({ key }: { key: string }) => {
-
-    console.log("Clicked", key);
 
     if (key === "SPORTS") {
       setKeyState("SPORTS")
@@ -68,26 +67,31 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: s
     []
   );
 
+  useEffect(() => {
+    const splitHistory = history.location.pathname.split('/');
+    setBreadCrumbs(splitHistory.filter((value, index) => index % 2 !== 0));
+  }, [history.location.pathname]);
+
   return (
     <Layout style={{ height: "100vh" }}>
       <Header style={{ backgroundColor: "#19181a", color: "whitesmoke" }}>
         <div>
           <img src="src/resources/XSports_ScreenRes_72ppi.png" alt="Logo" className="logo"/>
           <div style={{ float: "right", marginRight: 30 }} onClick={() => {}}>
-            <span>
-              <Space>
-                <UserOutlined />
-                This user display name
-                <Dropdown
+            <span style={{cursor: 'pointer'}}>
+              <Dropdown
                   menu={{ items: userMenuItems }}
                   trigger={["click"]}
                   placement="bottom"
                 >
+                <Space>
+                  <UserOutlined />
+                  This user display name
                   <DownOutlined
                     style={{ fontSize: "12px", cursor: "pointer" }}
                   />
-                </Dropdown>
-              </Space>
+                </Space>
+              </Dropdown>
             </span>
           </div>
         </div>
@@ -98,8 +102,9 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: s
         </Sider>
         <Layout style={{ marginLeft: 8, marginTop: 8 }}>
           <Breadcrumb>
-            <Breadcrumb.Item>Ugen</Breadcrumb.Item>
-            <Breadcrumb.Item>Bugen</Breadcrumb.Item>
+          {breadcrumbs.map((value) => (
+            <Breadcrumb.Item>{value}</Breadcrumb.Item>
+          ))}
           </Breadcrumb>
           <Content style={{ marginTop: 16, marginRight: 16, marginBottom: 16 }}>
             {children}

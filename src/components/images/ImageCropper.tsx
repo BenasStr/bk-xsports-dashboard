@@ -2,12 +2,12 @@ import { Modal, ModalProps, Slider, UploadFile } from "antd";
 import React, { MutableRefObject, useCallback, useEffect } from "react";
 import { useState } from "react";
 import Cropper, { Area, CropperProps } from "react-easy-crop";
-import getCroppedImg from "../../utils/utils";
+import { getCroppedImg } from "../../utils/utils";
 
 interface Props extends ModalProps {
   imageSrc: string;
   fileRef: MutableRefObject<UploadFile>;
-  handleCropComplete: (image: string) => void;
+  handleCropComplete: (image: Blob) => void;
 }
 
 const ImageCropper: React.FunctionComponent<Props> = ({
@@ -20,34 +20,31 @@ const ImageCropper: React.FunctionComponent<Props> = ({
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState();
-  const [croppedImage, setCroppedImage] = useState<string>("");
+  const [croppedImage, setCroppedImage] = useState<Blob | null>();
 
   const onCropComplete = useCallback(
     async (croppedArea: Area, cropedPixels: Area) => {
-      try {
-        if (!image) {
-          console.log("?????");
-          return;
-        }
-        const convImage = await getCroppedImg(image, croppedArea);
-        console.log("IMAGE", image);
-        // setCrop();
-        convImage && setCroppedImage(convImage);
-        // handleCropComplete(image);
-      } catch (err) {
-        console.log(err);
-      }
+      const croppedImage = await getCroppedImg(imageSrc, cropedPixels);
+      console.log("CROPPED", croppedImage);
+      
+      setCroppedImage(croppedImage);
     },
     []
   );
-  console.log("IMAGE", image, fileRef);
+
+
   const handleModalOk = useCallback(
-    () => handleCropComplete(croppedImage),
+    () => {
+      if (!croppedImage) {
+        return;
+      }
+      handleCropComplete(croppedImage)
+    },
     [croppedImage]
   );
 
   return (
-    <Modal {...props} onOk={handleModalOk}>
+    <Modal {...props} onOk={handleModalOk} destroyOnClose>
       <div style={{ height: 500, width: 500 }}>
         {image && (
           <>
