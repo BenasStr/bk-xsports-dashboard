@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Button, Modal, ModalProps, message } from 'antd';
 import { CategoryEditPayload } from '../../../api/apipayloads';
-import { createCategory } from '../../../api/api';
+import { createCategory, uploadCategoryImage } from '../../../api/api';
 import { useSessionStorage } from '../../../hooks';
+import ImageUploader from '../../images/ImageUploader';
 
 interface Props extends ModalProps {
   sportId: number
@@ -12,16 +13,22 @@ interface Props extends ModalProps {
 const AddCategoryModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sportId }) => {
   const [form] = Form.useForm<CategoryEditPayload>();
   const { sessionStorage } = useSessionStorage();
+  const [uploadedImage, setUploadedImage] = useState<FormData>();
 
   const handleFormSubmit = async (values: CategoryEditPayload) => {
     try {
-      await createCategory(sessionStorage ? sessionStorage : "", sportId, values);
+      const createdCategory = await createCategory(sessionStorage ? sessionStorage : "", sportId, values);
+      await uploadCategoryImage(sessionStorage ? sessionStorage : "", sportId, createdCategory.id, uploadedImage);
       message.success("Created new category!");
       onSubmit()
     } catch (err) {
       message.error("Failed to create category!");
     }
   };
+
+  const handleImageUpload = (image: FormData) => {
+    setUploadedImage(image);
+  }
 
   return (
     <Modal
@@ -37,6 +44,10 @@ const AddCategoryModal: React.FunctionComponent<Props> = ({ open, onCancel, onSu
         <Form form={form} onFinish={handleFormSubmit}>
           <Form.Item name="name" rules={[{ required: true, message: 'Missing name for category!' }]}>
             <Input placeholder='Name' />
+          </Form.Item>
+
+          <Form.Item name="photoUrl">
+            <ImageUploader onUplaod={handleImageUpload}></ImageUploader>
           </Form.Item>
 
           <Form.Item>

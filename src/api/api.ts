@@ -216,6 +216,19 @@ export const deleteVariant = async (token: string, variantId: number) => {
   );
 }
 
+export const uploadCategoryImage = async (token: string, sportId: number, categoryId: number, image: any) => {
+  const response: AxiosResponse<any, any> = await axios.post(
+    `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/image`,
+    image,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+}
+
 // CATEGORIES
 export const getCategories = async (token: string, sportId: number) => {
   const response: AxiosResponse<any, any> = await axios.get(
@@ -365,7 +378,7 @@ export const deleteTrick = async (token: string, sportId: number, categoryId: nu
 
 export const createTrickVariant = async (token: string, sportId: number, categoryId: number, trickId: number, variant: TrickVariantEditPayload) => {
   const response: AxiosResponse<any, any> = await axios.post(
-    `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}/variants`,
+    `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}/variant`,
     variant,
     {
       headers: {
@@ -378,8 +391,8 @@ export const createTrickVariant = async (token: string, sportId: number, categor
 }
 
 export const updateTrickVariant = async (token: string, sportId: number, categoryId: number, trickId: number, variantId: number, variant: TrickVariantEditPayload) => {
-  const response: AxiosResponse<any, any> = await axios.post(
-    `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}/variants/${variantId}`,
+  const response: AxiosResponse<any, any> = await axios.put(
+    `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}/variant/${variantId}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -392,7 +405,7 @@ export const updateTrickVariant = async (token: string, sportId: number, categor
 
 export const deleteTrickVariant = async (token: string, sportId: number, categoryId: number, trickId: number, variantId: number) => {
   const response: AxiosResponse<any, any> = await axios.delete(
-    `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}/variants/${variantId}`,
+    `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}/variant/${variantId}`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -423,7 +436,6 @@ export const getImage = async (token: string, url: string) => {
     url,
     {
       headers: {
-        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`
       }
     }

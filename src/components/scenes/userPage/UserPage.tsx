@@ -1,9 +1,9 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Popconfirm, Space, Table } from "antd";
+import { Button, Popconfirm, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getUsers } from "../../../api/api";
-import { UsersPage } from "../../../api/apipayloads";
+import { UserPayload, UsersPage } from "../../../api/apipayloads";
 import { useSessionStorage } from "../../../hooks";
 
 const UserPage: React.FunctionComponent = () => {
@@ -20,14 +20,26 @@ const UserPage: React.FunctionComponent = () => {
     }
   }
 
+  const renderRole = useCallback((user: UserPayload) => {
+    return (
+      <Tag color={user.role == "ADMIN"? 'red' : 'purple'} key={user.id}>
+        {user.role}
+      </Tag>
+    );
+  }, []);
+
   useEffect(() => {
     getCategoriesData()
   }, []);
 
   return (!data ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
-    <Table dataSource={data?.items} pagination={{ pageSize: data?.items_per_page, current: data?.page_index, total: data?.total_items}}>
+    <Table dataSource={data.items} pagination={{ pageSize: data.items_per_page, current: data.page_index, total: data.total_items}}>
       <Table.Column key="index" dataIndex="id" title="Index" width={25}/>
       <Table.Column key="name" dataIndex="name" title="Name" />
+      <Table.Column 
+          title="Variants" 
+          render={renderRole}
+        />
       <Table.Column
         key="actionColumn"
         render={renderActionColumn}

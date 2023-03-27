@@ -20,7 +20,7 @@ const SportsPage: React.FunctionComponent = () => {
   const [sportEdit, setSoprtEdit] = useState<SportPayload>({
     id: 0,
     name: '',
-    photo_url: '',
+    photo: '',
     variants: []
   });
 
@@ -97,7 +97,7 @@ const SportsPage: React.FunctionComponent = () => {
           <Popconfirm
             onClick={(e: MouseEvent) => e.stopPropagation()}
             placement="topRight"
-            title={"Delete this variant?"}
+            title={"Delete this sport?"}
             onConfirm={handleDeleteClick(sport.id)}
             okText="Yes"
             cancelText="Cancel"
@@ -152,8 +152,17 @@ const SportsPage: React.FunctionComponent = () => {
         />
       </Table>
 
-      <AddSportModal open={isAddModalVisible} onCancel={handleCloseAddModal} onSubmit={handleAddModalSubmit}/>
-      <EditSportModal open={isEditModalVisible} onCancel={handleCloseEditModal} onSubmit={handleEditModalSubmit} sport={sportEdit}/>
+      <AddSportModal 
+        open={isAddModalVisible} 
+        onCancel={handleCloseAddModal} 
+        onSubmit={handleAddModalSubmit}
+      />
+      <EditSportModal 
+        open={isEditModalVisible}
+        onCancel={handleCloseEditModal}
+        onSubmit={handleEditModalSubmit}
+        sport={sportEdit}
+      />
     </div>
   );
 };

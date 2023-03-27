@@ -64,7 +64,7 @@ export interface VariantEditPayload {
 export interface CategoryPayload {
   id: number;
   name: string;
-  photo_url: string;
+  photo: string;
 }
 
 export interface CategoryEditPayload {
@@ -100,8 +100,8 @@ export interface TrickEditPayload {
 
 export interface TrickVariantEditPayload {
   description: string
-  short_description: string
-  variant_id: number
+  shortDescription: string
+  variantId: number
 }
 
 // Difficulties

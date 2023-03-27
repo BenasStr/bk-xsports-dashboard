@@ -1,5 +1,5 @@
 import {
-  Button,
+  message,
   Modal,
   ModalProps,
   Upload,
@@ -18,8 +18,16 @@ const acceptedFileTypes = ["image/png", "image/jpeg", "image/jpg"];
 
 const acceptedFiles = acceptedFileTypes.join(", ");
 
-const ImageUploader: React.FunctionComponent<React.CSSProperties> = (
-  styleProps
+
+interface ImageUploaderProps {
+  onUplaod: (image: FormData) => void;
+}
+
+const ImageUploader: React.FunctionComponent<ImageUploaderProps & React.CSSProperties> = (
+  {
+    onUplaod,
+    ...styleProps
+  }
 ) => {
   const [previewOpen, setPreviewOpen] = useState<boolean>(false);
   const [previewFile, setPreviewFile] = useState<string>("");
@@ -28,7 +36,8 @@ const ImageUploader: React.FunctionComponent<React.CSSProperties> = (
   const [cropModalVisible, setCropModalVisible] = useState(false);
   const fileRef = useRef<UploadFile>({} as UploadFile);
   const [editableFile, setEditableFile] = useState("");
-  const {sessionStorage} = useSessionStorage();
+  // const { sessionStorage } = useSessionStorage();
+  // const [image, setImage] = useState<FormData>();
 
   const handleCancel = useCallback(() => setPreviewOpen(false), []);
 
@@ -44,29 +53,21 @@ const ImageUploader: React.FunctionComponent<React.CSSProperties> = (
     setCropModalVisible(false);
   }, []);
 
-  const handleCropSubmit = useCallback( async (image: Blob) => {
+  const handleCropSubmit = useCallback(async (image: Blob) => {
     let formData = new FormData();
     formData.append("file", image, "image.jpg")
-
-    try {
-        uploadSportImage(sessionStorage ? sessionStorage : "", 1, formData)
-        handleCropModalClose();
-        const reader = new FileReader();
-        reader.onload = () => {
-          setPreviewFile(reader.result as string)
-          setFileList((prev) => ([{...prev[0], thumbUrl: reader.result as string}]))
-        }
-      reader.readAsDataURL(image)
-    } catch (err) {
-      console.log("Burh 4");
+    // setImage(formData);
+    // uploadSportImage(sessionStorage ? sessionStorage : "", 1, formData)
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPreviewFile(reader.result as string)
+      setFileList((prev) => ([{ ...prev[0], thumbUrl: reader.result as string }]))
     }
+    reader.readAsDataURL(image)
+    handleCropModalClose();
+    console.log(onUplaod)
+    onUplaod(formData);
   }, []);
-
-  const adjustPreviewFileThumbnail = useCallback((file: UploadFile) => {
-    return { ...file, thumbUrl: previewFile } as UploadFile;
-  }, [])
-
-  const handleUpload = async () => {};
 
   const draggerProps: UploadProps = {
     name: "image",

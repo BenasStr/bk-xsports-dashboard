@@ -11,7 +11,7 @@ interface Props extends ModalProps {
   onSubmit: () => void;
 }
 
-const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, trick }) => {
+const EditTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, trick }) => {
   console.log(trick)
   const [form] = Form.useForm<SportEditPayload>();
   const { sessionStorage } = useSessionStorage();
@@ -40,7 +40,7 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
     >
       <div style={{ padding: '16px' }}>
         <h2>
-          Edit Trick
+          Edit Trick Variant
         </h2>
 
         <Form form={form} preserve={false} onFinish={handleFormSubmit}>
@@ -59,4 +59,4 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
   );
 };
 
-export default EditTrickModal;
+export default EditTrickVariantModal;

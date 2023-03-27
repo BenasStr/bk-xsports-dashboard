@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Form, Input, Button, message, List, Checkbox, Modal, ModalProps, Image } from 'antd';
 import { SportEditPayload, SportPayload, VariantPayload } from '../../../api/apipayloads';
-import { getImage, getVariants, updateSport } from '../../../api/api';
+import { getImage, getVariants, updateSport, uploadSportImage } from '../../../api/api';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import ImageUploader from '../../images/ImageUploader';
-import axios from 'axios';
 
 interface Props extends ModalProps {
   sport: SportPayload;
@@ -18,6 +17,7 @@ const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
   const { sessionStorage } = useSessionStorage();
   const [variants, setVariants] = useState<VariantPayload[]>([]);
   const [image, setImage] = useState<string | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<FormData>();
 
   const initialValues = useMemo(() => ({
     name: sport.name,
@@ -39,7 +39,7 @@ const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
   }
 
   const loadImage = async () => {
-    if(!open) {
+    if(!open || sport.photo == "" || sport.photo == null) {
       return;
     }
     try {
@@ -48,31 +48,23 @@ const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
       reader.onload = () => {
         setImage(reader.result as string);
       }
-      reader.readAsDataURL(data)
     } catch(err) {
       console.log(err);
       message.error("Failed to retrieve image!");
     }
   }
-  // const fetchImage = async () => {
-  //   try {
-  //     const headers = {
-  //       'Authorization': `Bearer ${sessionStorage?sessionStorage:""}`
-  //     };
-  //     const response = await axios.get(sport.photoUrl, { headers });
-  //     const blob = await response.data.blob();
-  //     const url = URL.createObjectURL(blob);
-  //     setImage(url);
-  //     console.log(url);
-  //   } catch (error) {
-  //     console.log(error)
-  //     message.error('Error fetching image');
-  //   }
-  // };
+
+  const handleImageUpload = (image: FormData) => {
+    setUploadedImage(image);
+  }
 
   const handleFormSubmit = async (values: SportEditPayload) => {
     try {
       await updateSport(sessionStorage ? sessionStorage : "", sport.id, values);
+      console.log(uploadedImage);
+      if (uploadedImage != null) {
+        await uploadSportImage(sessionStorage ? sessionStorage : "", sport.id, uploadedImage)
+      }
       message.success("Updated sport!");
       onSubmit();
     } catch (err) {
@@ -104,15 +96,19 @@ const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
             <Input />
           </Form.Item>
 
-          {/* <Image
-            src={sport.photo}
-          /> */}
+          Current picture:
+          <div style={{alignItems: 'center'}}>
+            <Image
+              src={sport.photo}
+            />
+          </div>
 
           <Form.Item name="photoUrl">
-            <ImageUploader></ImageUploader>
+            <ImageUploader onUplaod={handleImageUpload}></ImageUploader>
           </Form.Item>
 
-          <Form.Item label="Variants" name="variantsIds">
+          Variants:
+          <Form.Item name="variantsIds">
             <Checkbox.Group >
               <List>
                 {variants.map((variant) => {

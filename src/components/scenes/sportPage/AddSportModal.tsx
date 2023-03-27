@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, List, Checkbox, Modal, ModalProps } from 'antd';
 import { SportEditPayload, VariantPayload } from '../../../api/apipayloads';
-import { createSport, getVariants } from '../../../api/api';
+import { createSport, getVariants, uploadSportImage } from '../../../api/api';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
+import ImageUploader from '../../images/ImageUploader';
 
 interface Props extends ModalProps {
   onSubmit: () => void;
@@ -13,6 +14,7 @@ const AddSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
   const [form] = Form.useForm<SportEditPayload>();
   const {sessionStorage} = useSessionStorage();
   const [variants, setVariants] = useState<VariantPayload[]>([]);
+  const [uploadedImage, setUploadedImage] = useState<FormData>();
 
   const getVariantsData = async () => {
     try {
@@ -30,12 +32,19 @@ const AddSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
 
   const handleFormSubmit = async (values: SportEditPayload) => {
     try {
-      await createSport(sessionStorage?sessionStorage:"", values);
+      const addedSport = await createSport(sessionStorage?sessionStorage:"", values);
+      if (uploadedImage != null) {
+        await uploadSportImage(sessionStorage ? sessionStorage : "", addedSport.id, uploadedImage)
+      }
       onSubmit()
     } catch (err) {
       message.error("Failed to create sport!")
     }
   };
+
+  const handleImageUpload = (image: FormData) => {
+    setUploadedImage(image);
+  }
 
   useEffect(() => {
     getVariantsData();
@@ -55,6 +64,10 @@ const AddSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
         <Form form={form} onFinish={handleFormSubmit}>
         <Form.Item name="name" rules={[{ required: true, message: 'Missing name for sport!' }]}>
           <Input placeholder='Name'/>
+        </Form.Item>
+
+        <Form.Item name="photoUrl">
+          <ImageUploader onUplaod={handleImageUpload}></ImageUploader>
         </Form.Item>
 
         <Form.Item label="Variants" name="variantsIds">
