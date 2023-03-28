@@ -37,7 +37,7 @@ const UserPage: React.FunctionComponent = () => {
       <Table.Column key="index" dataIndex="id" title="Index" width={25}/>
       <Table.Column key="name" dataIndex="name" title="Name" />
       <Table.Column 
-          title="Variants" 
+          title="Role" 
           render={renderRole}
         />
       <Table.Column

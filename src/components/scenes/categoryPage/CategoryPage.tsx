@@ -20,7 +20,7 @@ const CategoryPage: React.FunctionComponent = () => {
   const [categoryEdit, setCategoryEdit] = useState<CategoryPayload>({
     id: 0,
     name: '',
-    photo_url: ''
+    photo: ''
   });
 
   const getCategoriesData = async () => {
@@ -134,8 +134,19 @@ const CategoryPage: React.FunctionComponent = () => {
         />
       </Table>
 
-      <AddCategoryModal open={isAddModalVisible} onCancel={handleCloseAddModal} onSubmit={handleAddModalSubmit} sportId={sportId} />
-      <EditCategoryModal open={isEditModalVisible} onCancel={handleCloseEditModal} onSubmit={handleEditModalSubmit} category={categoryEdit} sportId={sportId} />
+      <AddCategoryModal 
+        open={isAddModalVisible} 
+        onCancel={handleCloseAddModal} 
+        onSubmit={handleAddModalSubmit} 
+        sportId={sportId} 
+      />
+      <EditCategoryModal 
+        open={isEditModalVisible} 
+        onCancel={handleCloseEditModal} 
+        onSubmit={handleEditModalSubmit} 
+        category={categoryEdit} 
+        sportId={sportId} 
+      />
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { Button, message, Popconfirm, Space, Table } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { deleteSport, getDifficulties, getTricks, getSport, deleteTrick, deleteTrickVariant } from "../../../api/api";
-import { DifficultyPayload, TrickBasicPayload, TrickEditPayload, TrickPayload, SportPayload, VariantPayload } from "../../../api/apipayloads";
+import { DifficultyPayload, TrickBasicPayload, TrickEditPayload, TrickPayload, SportPayload, VariantPayload, TrickVariantEditPayload } from "../../../api/apipayloads";
 import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../../hooks";
 import AddTrickModal from "./AddTrickModal";
@@ -28,14 +28,23 @@ const TricksPage: React.FunctionComponent = () => {
   const history = useHistory();
   const [sportId] = useState<number>(parseInt(history.location.pathname.split("/")[2]));
   const [categoryId] = useState<number>(parseInt(history.location.pathname.split("/")[4]));
-  const [trickEdit, setTrickEdit] = useState<TrickEditPayload>({
+  const { sessionStorage } = useSessionStorage();
+  const [trickEdit, setTrickEdit] = useState<TrickPayload>({
+    id: 0,
     name: '',
-    difficultyId: 0,
-    trickParentsIds: [],
+    shortDescription: '',
     description: '',
+    difficulty: '',
+    video: '',
+    trickParents: [],
+    trickChildren: [],
+    trickVariants: []
+  });
+  const [variantEdit, setVariantEdit] = useState<TrickBasicPayload>({
+    id: 0,
+    name: '',
     shortDescription: ''
   });
-  const { sessionStorage } = useSessionStorage();
 
   const handleOpenAddModal = useCallback(() => {
     setIsAddModalVisible(true);
@@ -53,15 +62,15 @@ const TricksPage: React.FunctionComponent = () => {
     getTricksData();
   }, []);
 
-  const handleEditButtonClick = useCallback((trick: TrickPayload | TrickBasicPayload) => (event: any) => {
+  const handleEditButtonClick = useCallback((trick: TrickPayload) => (event: any) => {
     event.stopPropagation();
-    // setTrickEdit(trick);
+    setTrickEdit(trick);
     setIsEditModalVisible(true);
   }, []);
 
-  const handleEditVariantButtonClick = useCallback((trick: TrickPayload | TrickBasicPayload) => (event: any) => {
+  const handleEditVariantButtonClick = useCallback((trick: TrickBasicPayload) => (event: any) => {
     event.stopPropagation();
-    // setTrickEdit(trick);
+    setVariantEdit(trick);
     setIsEditVariantModalVisible(true);
   }, []);
 
@@ -255,13 +264,17 @@ const TricksPage: React.FunctionComponent = () => {
           open={isEditModalVisible} 
           onCancel={handleCloseModal} 
           onSubmit={handleModalSubmit} 
-          trick={trickEdit}
+          sportId={sportId}
+          categoryId={categoryId}
+          tricks={data}
+          trickEdit={trickEdit}
+          difficulties={difficulties}
         />
         <EditTrickVariantModal
           open={isEditVariantModalVisible}
           onCancel={handleCloseModal}
           onSubmit={handleModalSubmit}
-          trick={trickEdit}
+          trick={variantEdit}
         />
       </div>
   );

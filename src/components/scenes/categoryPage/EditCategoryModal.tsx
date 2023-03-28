@@ -18,7 +18,7 @@ const EditCategoryModal: React.FunctionComponent<Props> = ({ open, onCancel, onS
   const [image, setImage] = useState<string | null>(null);
 
   const initialValues = useMemo(() => ({
-    name: category.name
+    name: category.name,
   }), [category])
 
   const handleFormSubmit = async (values: CategoryEditPayload) => {
@@ -70,7 +70,7 @@ const EditCategoryModal: React.FunctionComponent<Props> = ({ open, onCancel, onS
           Edit Sport
         </h2>
 
-        <Form form={form} preserve={false} initialValues={initialValues} onFinish={handleFormSubmit}>
+        <Form form={form} initialValues={initialValues} onFinish={handleFormSubmit}>
           <Form.Item name="name" rules={[{ required: true, message: 'Missing name for category!' }]}>
             <Input />
           </Form.Item>
