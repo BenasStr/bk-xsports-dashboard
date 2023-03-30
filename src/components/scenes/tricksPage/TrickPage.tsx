@@ -2,7 +2,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { Button, message, Popconfirm, Space, Table } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
-import { deleteSport, getDifficulties, getTricks, getSport, deleteTrick, deleteTrickVariant } from "../../../api/api";
+import { deleteSport, getDifficulties, getTricks, getSport, deleteTrick, deleteTrickVariant, getTrick } from "../../../api/api";
 import { DifficultyPayload, TrickBasicPayload, TrickEditPayload, TrickPayload, SportPayload, VariantPayload, TrickVariantEditPayload } from "../../../api/apipayloads";
 import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../../hooks";
@@ -40,11 +40,6 @@ const TricksPage: React.FunctionComponent = () => {
     trickChildren: [],
     trickVariants: []
   });
-  const [variantEdit, setVariantEdit] = useState<TrickBasicPayload>({
-    id: 0,
-    name: '',
-    shortDescription: ''
-  });
 
   const handleOpenAddModal = useCallback(() => {
     setIsAddModalVisible(true);
@@ -70,7 +65,7 @@ const TricksPage: React.FunctionComponent = () => {
 
   const handleEditVariantButtonClick = useCallback((trick: TrickBasicPayload) => (event: any) => {
     event.stopPropagation();
-    setVariantEdit(trick);
+    getTrickData(trick.id);
     setIsEditVariantModalVisible(true);
   }, []);
 
@@ -83,6 +78,16 @@ const TricksPage: React.FunctionComponent = () => {
     } catch (err) {
       console.log(err);
       message.error("Failed to reterieve tricks!");
+    }
+  }
+
+  const getTrickData = async (id: number) => {
+    try {
+      const data: TrickPayload = await getTrick(sessionStorage ? sessionStorage : "", sportId, categoryId, id);
+      setTrickEdit(data);
+    } catch (err) {
+      console.log(err);
+      message.error("Failed to retrieve trick!");
     }
   }
 
@@ -274,7 +279,10 @@ const TricksPage: React.FunctionComponent = () => {
           open={isEditVariantModalVisible}
           onCancel={handleCloseModal}
           onSubmit={handleModalSubmit}
-          trick={variantEdit}
+          sportId={sportId}
+          categoryId={categoryId}
+          trick={trickEdit}
+          variants={variants}
         />
       </div>
   );

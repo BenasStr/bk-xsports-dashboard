@@ -14,7 +14,7 @@ interface Props extends ModalProps {
     onSubmit: () => void;
 }
 
-const AddTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sportId, categoryId, trickId, variants}) => {
+const AddTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sportId, categoryId, trickId, variants }) => {
     const [form] = Form.useForm<TrickVariantEditPayload>();
     const { sessionStorage } = useSessionStorage();
 
@@ -30,11 +30,12 @@ const AddTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, 
 
     const mapToSelectProps = (): SelectProps["options"] => {
         return variants.map((variant) => {
-          return {
-            value: variant.id,
-            label: variant.name
-          }});
-      }
+            return {
+                value: variant.id,
+                label: variant.name
+            }
+        });
+    }
 
     return (
         <Modal

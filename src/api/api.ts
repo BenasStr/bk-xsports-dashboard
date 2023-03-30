@@ -353,6 +353,7 @@ export const createTrick = async (token: string, sportId: number, categoryId: nu
 export const updateTrick = async (token: string, sportId: number, categoryId: number, trickId: number, trick: TrickEditPayload) => {
   const response: AxiosResponse<any, any> = await axios.put(
     `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}`,
+    trick,
     {
       headers: {
         "Content-Type": "application/json",
@@ -393,6 +394,7 @@ export const createTrickVariant = async (token: string, sportId: number, categor
 export const updateTrickVariant = async (token: string, sportId: number, categoryId: number, trickId: number, variantId: number, variant: TrickVariantEditPayload) => {
   const response: AxiosResponse<any, any> = await axios.put(
     `${API_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}/variant/${variantId}`,
+    variant,
     {
       headers: {
         "Content-Type": "application/json",

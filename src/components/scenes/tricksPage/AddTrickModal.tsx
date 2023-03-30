@@ -87,7 +87,7 @@ const AddTrickModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
         </Form.Item>
 
         Select Trick Parents:
-        <Form.Item name="parentsIds">
+        <Form.Item name="trickParentsIds">
           <Select
             mode="multiple"
             placeholder="Please select"

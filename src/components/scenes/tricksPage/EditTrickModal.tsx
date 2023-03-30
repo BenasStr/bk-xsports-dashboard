@@ -4,6 +4,8 @@ import { DifficultyPayload, SportEditPayload, TrickPayload } from '../../../api/
 import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';
+import { DefaultOptionType } from 'antd/es/select';
+import { updateTrick } from '../../../api/api';
 
 interface Props extends ModalProps {
   sportId: number;
@@ -28,11 +30,11 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
 
   const handleFormSubmit = async (values: SportEditPayload) => {
     try {
-      //   await updateSport(sessionStorage ? sessionStorage : "", sport.id, values);
-      message.success("Updated sport!");
+        await updateTrick(sessionStorage ? sessionStorage : "", sportId, categoryId, trickEdit.id, values);
+      message.success("Updated trick!");
       onSubmit();
     } catch (err) {
-      message.error("Failed to update sport!");
+      message.error("Failed to update trick!");
     }
   };
 
@@ -52,6 +54,16 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
         label: trick.name
       }
     });
+  }
+
+  const mapToDefaultProps = (): DefaultOptionType["options"] => {
+    return trickEdit.trickParents
+      .map((trick) => {
+        return {
+          value: trick.id,
+          label: trick.name
+        }
+      })
   }
 
   const onChange = (e: RadioChangeEvent) => {
@@ -96,12 +108,13 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
             </Form.Item>
 
             Select Trick Parents:
-            <Form.Item name="parentsIds">
+            <Form.Item name="trickParentsIds">
               <Select
                 mode="multiple"
                 placeholder="Please select"
                 onChange={handleChange}
                 filterOption={filterOption}
+                defaultValue={mapToDefaultProps()}
                 options={mapToSelectProps()}
               />
             </Form.Item>
