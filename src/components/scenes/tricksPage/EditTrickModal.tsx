@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Form, Input, Button, message, Modal, ModalProps, Radio, Space, Select, RadioChangeEvent, SelectProps } from 'antd';
+import { Form, Input, Button, message, Modal, ModalProps, Radio, Space, Select, RadioChangeEvent, SelectProps, Upload, Card } from 'antd';
 import { DifficultyPayload, SportEditPayload, TrickPayload } from '../../../api/apipayloads';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';
 import { DefaultOptionType } from 'antd/es/select';
 import { updateTrick } from '../../../api/api';
+import VideoUploader from '../../videos/videoUploader';
 
 interface Props extends ModalProps {
   sportId: number;
@@ -16,10 +17,13 @@ interface Props extends ModalProps {
   onSubmit: () => void;
 }
 
+const videoUrl = 'https://app-benasstr.cloud.okteto.net/api/videos/trick-2.mp4';
+
 const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sportId, categoryId, tricks, trickEdit, difficulties }) => {
   const [form] = Form.useForm<SportEditPayload>();
   const { sessionStorage } = useSessionStorage();
-  const [difficulty, setDifficulty] = useState(0);
+  const [difficulty, setDifficulty] = useState<number>(0);
+  const [videoError, setVideoError] = useState<boolean>(true);
 
   const initialValues = useMemo(() => ({
     name: trickEdit.name,
@@ -70,6 +74,10 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
     setDifficulty(e.target.value);
   };
 
+  const handleVidoeUpload = () => {
+    setVideoError(true);
+  }
+
   return (
     <Modal
       open={open}
@@ -86,6 +94,20 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
           <Form form={form} preserve={false} initialValues={initialValues} onFinish={handleFormSubmit}>
             <Form.Item name="name" rules={[{ required: true, message: 'Missing name for trick!' }]}>
               <Input placeholder='Name' />
+            </Form.Item>
+
+            <Card>
+              {
+                videoError ? 
+                  <p>Video not found!</p> :
+                  <video width="100%" height="auto" controls>
+                    <source src={videoUrl} type="video/mp4" />
+                  </video>
+              }
+            </Card>
+
+            <Form.Item>
+              <VideoUploader onUplaod={handleVidoeUpload}></VideoUploader>
             </Form.Item>
 
             Difficulty:

@@ -8,8 +8,6 @@ import {
 } from "antd";
 import { RcFile } from "antd/es/upload";
 import { useCallback, useRef, useState } from "react";
-import { uploadSportImage } from "../../api/api";
-import { useSessionStorage } from "../../hooks";
 import ImageCropper from "./ImageCropper";
 
 const { Dragger } = Upload;
@@ -36,8 +34,6 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps & React.CSSPrope
   const [cropModalVisible, setCropModalVisible] = useState(false);
   const fileRef = useRef<UploadFile>({} as UploadFile);
   const [editableFile, setEditableFile] = useState("");
-  // const { sessionStorage } = useSessionStorage();
-  // const [image, setImage] = useState<FormData>();
 
   const handleCancel = useCallback(() => setPreviewOpen(false), []);
 
@@ -49,6 +45,7 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps & React.CSSPrope
     setPreviewOpen(true);
     setPreviewFileName(file.name);
   }, []);
+
   const handleCropModalClose = useCallback(() => {
     setCropModalVisible(false);
   }, []);
@@ -56,8 +53,6 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps & React.CSSPrope
   const handleCropSubmit = useCallback(async (image: Blob) => {
     let formData = new FormData();
     formData.append("file", image, "image.jpg")
-    // setImage(formData);
-    // uploadSportImage(sessionStorage ? sessionStorage : "", 1, formData)
     const reader = new FileReader();
     reader.onload = () => {
       setPreviewFile(reader.result as string)
@@ -65,7 +60,6 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps & React.CSSPrope
     }
     reader.readAsDataURL(image)
     handleCropModalClose();
-    console.log(onUplaod)
     onUplaod(formData);
   }, []);
 
@@ -84,7 +78,7 @@ const ImageUploader: React.FunctionComponent<ImageUploaderProps & React.CSSPrope
     },
     listType: "picture-card",
     onPreview: handlePreview,
-    fileList: fileList,
+    fileList: fileList
   };
 
   return (

@@ -1,10 +1,11 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Popconfirm, Space, Table, Tag } from "antd";
+import { Button, Input, Popconfirm, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { getUsers } from "../../../api/api";
 import { UserPayload, UsersPage } from "../../../api/apipayloads";
 import { useSessionStorage } from "../../../hooks";
+import Search from "../../generics/Search";
 
 const UserPage: React.FunctionComponent = () => {
   const [data, setData] = useState<UsersPage>();
@@ -28,11 +29,19 @@ const UserPage: React.FunctionComponent = () => {
     );
   }, []);
 
+  const handleSearch = (value: string) => {
+    console.log(value);
+  }
+
   useEffect(() => {
     getCategoriesData()
   }, []);
 
   return (!data ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
+  <>
+    <div style={{marginBottom: '10px'}}>
+      <Search onSearch={handleSearch}/>
+    </div>
     <Table dataSource={data.items} pagination={{ pageSize: data.items_per_page, current: data.page_index, total: data.total_items}}>
       <Table.Column key="index" dataIndex="id" title="Index" width={25}/>
       <Table.Column key="name" dataIndex="name" title="Name" />
@@ -46,6 +55,7 @@ const UserPage: React.FunctionComponent = () => {
         fixed="right"
       />
     </Table>
+  </>
   );
 };
 

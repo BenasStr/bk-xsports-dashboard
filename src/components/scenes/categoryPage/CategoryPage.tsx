@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, message, Popconfirm, Space, Table } from "antd";
+import { Button, Col, message, Popconfirm, Row, Select, Space, Table } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { deleteCategory, getCategories } from "../../../api/api";
@@ -8,6 +8,7 @@ import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../../hooks";
 import AddCategoryModal from "./AddCategoryModal";
 import EditCategoryModal from "./EditCategoryModal";
+import SearchInput from "../../generics/Search";
 
 const CategoryPage: React.FunctionComponent = () => {
   const history = useHistory();
@@ -62,7 +63,11 @@ const CategoryPage: React.FunctionComponent = () => {
     event.stopPropagation();
     setCategoryEdit(category);
     setIsEditModalVisible(true);
-  }, [])
+  }, []);
+
+  const handleSearch = (value: string) => {
+    console.log(value);
+  };
 
   const handleDeleteClick = useCallback((id: number) => async (event: MouseEvent) => {
     event.stopPropagation();
@@ -120,10 +125,25 @@ const CategoryPage: React.FunctionComponent = () => {
   }, []);
 
   return (!doneLoading ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
-    <div>
+    <>
       <div style={{ marginBottom: '10px' }}>
-        <Button onClick={() => handleOpenAddModal()}>+ Add Category</Button>
+        <Row gutter={[8, 8]}>
+          <Col span={8}>
+            <SearchInput onSearch={handleSearch}/>
+          </Col>
+
+          <Col span={8}>
+            <Select/>
+          </Col>
+
+          <Col span={8}>
+            <div style={{float: 'right'}}>
+              <Button onClick={() => handleOpenAddModal()}>+ Add Category</Button>
+            </div>
+          </Col>
+        </Row>
       </div>
+
       <Table dataSource={data} pagination={{ pageSize: 20 }} onRow={rowProps}>
         <Table.Column key="index" dataIndex="id" title="Index" width={25} />
         <Table.Column key="category" dataIndex="name" title="Category" />
@@ -140,6 +160,7 @@ const CategoryPage: React.FunctionComponent = () => {
         onSubmit={handleAddModalSubmit} 
         sportId={sportId} 
       />
+
       <EditCategoryModal 
         open={isEditModalVisible} 
         onCancel={handleCloseEditModal} 
@@ -147,7 +168,7 @@ const CategoryPage: React.FunctionComponent = () => {
         category={categoryEdit} 
         sportId={sportId} 
       />
-    </div>
+    </>
   );
 };
 

@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, message, Popconfirm, Space, Table } from "antd";
+import { Button, Col, message, Popconfirm, Row, Select, Space, Table } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { deleteSport, getDifficulties, getTricks, getSport, deleteTrick, deleteTrickVariant, getTrick } from "../../../api/api";
@@ -10,6 +10,7 @@ import AddTrickModal from "./AddTrickModal";
 import AddTrickVariantModal from "./AddTrickVariantModal";
 import EditTrickModal from "./EditTrickModal";
 import EditTrickVariantModal from "./EditTrickVariantModal";
+import SearchInput from "../../generics/Search";
 
 const TricksPage: React.FunctionComponent = () => {
   const [data, setData] = useState<TrickPayload[]>([]);
@@ -147,6 +148,10 @@ const TricksPage: React.FunctionComponent = () => {
     setLoadingState(true)
   }, []);
 
+  const handleSearch = (value: string) => {
+    console.log(value);
+  };
+
   useEffect(() => {
     getTricksData()
     getDifficultiesData()
@@ -224,9 +229,23 @@ const TricksPage: React.FunctionComponent = () => {
 
   return (
     !doneLoading ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
-      <div>
+      <>
         <div style={{ marginBottom: '10px' }}>
-          <Button onClick={() => handleOpenAddModal()}>+ Add Trick</Button>
+          <Row gutter={[8, 8]}>
+            <Col span={8}>
+              <SearchInput onSearch={handleSearch}/>
+            </Col>
+
+            <Col span={8}>
+              <Select/>
+            </Col>
+
+            <Col span={8}>
+              <div style={{float: 'right'}}>
+                <Button onClick={() => handleOpenAddModal()}>+ Add Trick</Button>
+              </div>
+            </Col>
+          </Row>
         </div>
 
         <Table 
@@ -284,7 +303,7 @@ const TricksPage: React.FunctionComponent = () => {
           trick={trickEdit}
           variants={variants}
         />
-      </div>
+      </>
   );
 };
 
