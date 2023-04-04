@@ -96,17 +96,17 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
               <Input placeholder='Name' />
             </Form.Item>
 
-            <Card>
-              {
-                videoError ? 
-                  <p>Video not found!</p> :
-                  <video width="100%" height="auto" controls>
-                    <source src={videoUrl} type="video/mp4" />
-                  </video>
-              }
-            </Card>
+            {
+              videoError ? 
+                <Card>
+                  <p>Video not found!</p> 
+                </Card> :
+                <video width="100%" height="auto" controls>
+                  <source src={videoUrl} type="video/mp4" />
+                </video>
+            }
 
-            <Form.Item>
+            <Form.Item name="video">
               <VideoUploader onUplaod={handleVidoeUpload}></VideoUploader>
             </Form.Item>
 

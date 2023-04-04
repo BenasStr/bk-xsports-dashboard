@@ -228,7 +228,6 @@ const TricksPage: React.FunctionComponent = () => {
   }, []);
 
   return (
-    !doneLoading ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
       <>
         <div style={{ marginBottom: '10px' }}>
           <Row gutter={[8, 8]}>
@@ -248,61 +247,67 @@ const TricksPage: React.FunctionComponent = () => {
           </Row>
         </div>
 
-        <Table 
-          dataSource={data} pagination={{ pageSize: 20 }}
-          rowKey={(record) => record.id}
-          expandable={{
-            expandedRowRender: (record) => renderVariantTricks(record.trickVariants, record.id),
-            rowExpandable: (record) => record.trickVariants.length > 0,
-          }}  
-        >
-          <Table.Column dataIndex="id" title="Index" width={25} />
-          <Table.Column dataIndex="name" title="Trick" />
-          <Table.Column dataIndex="difficulty" title="Difficulty" />
-          <Table.Column
-            render={renderActionColumn}
-            fixed="right"
-          />
-        </Table>
-
-        <AddTrickModal
-          open={isAddModalVisible}
-          onCancel={handleCloseModal}
-          onSubmit={handleModalSubmit}
-          sportId={sportId}
-          categoryId={categoryId}
-          tricks={data}
-          difficulties={difficulties}
-        />
-
-        <AddTrickVariantModal
-          open={isAddVariantModalVisible}
-          onCancel={handleCloseModal} 
-          onSubmit={handleModalSubmit}
-          sportId={sportId}
-          categoryId={categoryId}
-          trickId={selectedTrickId}
-          variants={variants}     
-        />
-        <EditTrickModal 
-          open={isEditModalVisible} 
-          onCancel={handleCloseModal} 
-          onSubmit={handleModalSubmit} 
-          sportId={sportId}
-          categoryId={categoryId}
-          tricks={data}
-          trickEdit={trickEdit}
-          difficulties={difficulties}
-        />
-        <EditTrickVariantModal
-          open={isEditVariantModalVisible}
-          onCancel={handleCloseModal}
-          onSubmit={handleModalSubmit}
-          sportId={sportId}
-          categoryId={categoryId}
-          trick={trickEdit}
-          variants={variants}
-        />
+        {
+          !doneLoading ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
+          <>
+          
+            <Table 
+              dataSource={data} pagination={{ pageSize: 20 }}
+              rowKey={(record) => record.id}
+              expandable={{
+                expandedRowRender: (record) => renderVariantTricks(record.trickVariants, record.id),
+                rowExpandable: (record) => record.trickVariants.length > 0,
+              }}  
+            >
+              <Table.Column dataIndex="id" title="Index" width={25} />
+              <Table.Column dataIndex="name" title="Trick" />
+              <Table.Column dataIndex="difficulty" title="Difficulty" />
+              <Table.Column
+                render={renderActionColumn}
+                fixed="right"
+              />
+            </Table>
+    
+            <AddTrickModal
+              open={isAddModalVisible}
+              onCancel={handleCloseModal}
+              onSubmit={handleModalSubmit}
+              sportId={sportId}
+              categoryId={categoryId}
+              tricks={data}
+              difficulties={difficulties}
+            />
+    
+            <AddTrickVariantModal
+              open={isAddVariantModalVisible}
+              onCancel={handleCloseModal} 
+              onSubmit={handleModalSubmit}
+              sportId={sportId}
+              categoryId={categoryId}
+              trickId={selectedTrickId}
+              variants={variants}     
+            />
+            <EditTrickModal 
+              open={isEditModalVisible} 
+              onCancel={handleCloseModal} 
+              onSubmit={handleModalSubmit} 
+              sportId={sportId}
+              categoryId={categoryId}
+              tricks={data}
+              trickEdit={trickEdit}
+              difficulties={difficulties}
+            />
+            <EditTrickVariantModal
+              open={isEditVariantModalVisible}
+              onCancel={handleCloseModal}
+              onSubmit={handleModalSubmit}
+              sportId={sportId}
+              categoryId={categoryId}
+              trick={trickEdit}
+              variants={variants}
+            />
+          </>
+        }
       </>
   );
 };

@@ -6,6 +6,8 @@ import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';
 import { SelectProps } from 'rc-select';
 import { LoadingOutlined } from '@ant-design/icons';
+import VideoUploader from '../../videos/videoUploader';
+import { RcFile } from 'antd/es/upload';
 
 interface Props extends ModalProps {
     sportId: number;
@@ -49,6 +51,10 @@ const AddTrickModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
     setDifficulty(e.target.value);
   };
 
+  const handleVidoeUpload = (file: RcFile) => {
+    console.log(file);
+  }
+
   return ( 
     <Modal
           open={open}
@@ -65,6 +71,10 @@ const AddTrickModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
         <Form form={form} onFinish={handleFormSubmit}>
         <Form.Item name="name" rules={[{ required: true, message: 'Missing name for trick!' }]}>
           <Input placeholder='Name'/>
+        </Form.Item>
+
+        <Form.Item name="video">
+          <VideoUploader onUplaod={handleVidoeUpload}></VideoUploader>
         </Form.Item>
 
         Difficulty:

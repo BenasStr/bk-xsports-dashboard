@@ -1,15 +1,17 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Input, Popconfirm, Space, Table, Tag } from "antd";
+import { Button, Col, Input, Popconfirm, Row, Select, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { getUsers } from "../../../api/api";
 import { UserPayload, UsersPage } from "../../../api/apipayloads";
 import { useSessionStorage } from "../../../hooks";
 import Search from "../../generics/Search";
+import SearchInput from "../../generics/Search";
+import AddUserModal from "./AddUserModal";
 
 const UserPage: React.FunctionComponent = () => {
   const [data, setData] = useState<UsersPage>();
-
+  const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const {sessionStorage} = useSessionStorage();
 
   const getCategoriesData = async () => {
@@ -29,6 +31,19 @@ const UserPage: React.FunctionComponent = () => {
     );
   }, []);
 
+  const handleOpenAddModal = useCallback(() => {
+    setIsAddModalVisible(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setIsAddModalVisible(false);
+  }, []);
+
+  const handleModalSubmit = useCallback(() => {
+    handleCloseModal();
+    console.log("uga buga my guy");
+  }, []);
+
   const handleSearch = (value: string) => {
     console.log(value);
   }
@@ -39,12 +54,26 @@ const UserPage: React.FunctionComponent = () => {
 
   return (!data ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
   <>
-    <div style={{marginBottom: '10px'}}>
-      <Search onSearch={handleSearch}/>
-    </div>
+    <div style={{ marginBottom: '10px' }}>
+        <Row gutter={[8, 8]}>
+          <Col span={8}>
+            <SearchInput onSearch={handleSearch}/>
+          </Col>
+
+          <Col span={8}>
+            <Select/>
+          </Col>
+
+          <Col span={8}>
+            <div style={{float: 'right'}}>
+              <Button onClick={() => handleOpenAddModal()}>+ Add Moderator</Button>
+            </div>
+          </Col>
+        </Row>
+      </div>
     <Table dataSource={data.items} pagination={{ pageSize: data.items_per_page, current: data.page_index, total: data.total_items}}>
       <Table.Column key="index" dataIndex="id" title="Index" width={25}/>
-      <Table.Column key="name" dataIndex="name" title="Name" />
+      <Table.Column key="nickname" dataIndex="nickname" title="Name" />
       <Table.Column 
           title="Role" 
           render={renderRole}
@@ -55,6 +84,12 @@ const UserPage: React.FunctionComponent = () => {
         fixed="right"
       />
     </Table>
+
+    <AddUserModal 
+      open={isAddModalVisible}
+      onCancel={handleCloseModal}
+      onSubmit={handleModalSubmit}
+    />
   </>
   );
 };

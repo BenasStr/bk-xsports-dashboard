@@ -24,7 +24,7 @@ const SearchInput: React.FunctionComponent<SearchProps> =
                 allowClear
                 enterButton
                 onSearch={handleSearch}
-                value={searchTerm}
+                // value={searchTerm}
             />
         );
     };

@@ -10,8 +10,6 @@ import AddSportModal from "./AddSportModal";
 import EditSportModal from "./EditSportModal";
 import SearchInput from "../../generics/Search";
 
-const { Search } = Input;
-
 const SportsPage: React.FunctionComponent = () => {
   const [sports, setSports] = useState<SportPayload[]>();
   const [doneLoading, setLoadingState] = useState<boolean>(false);
@@ -25,7 +23,6 @@ const SportsPage: React.FunctionComponent = () => {
     photo: '',
     variants: []
   });
-
 
   const handleOpenAddModal = useCallback(() => {
     setIsAddModalVisible(true);
@@ -52,12 +49,14 @@ const SportsPage: React.FunctionComponent = () => {
   }, []);
 
   const getSportsData = async () => {
+    setLoadingState(false);
     try {
       const data: SportPayload[] = await getSports(sessionStorage ? sessionStorage : "");
       setSports(data);
     } catch (err) {
       message.error("Failed to reterieve sports!")
     }
+    setLoadingState(true);
   }
 
   const onRowClick = (sport: SportPayload, event: MouseEvent) => {
@@ -110,9 +109,7 @@ const SportsPage: React.FunctionComponent = () => {
   };
 
   useEffect(() => {
-    setLoadingState(false);
     getSportsData();
-    setLoadingState(true);
   }, []);
 
   const renderActionColumn = useCallback((sport: SportPayload) => {
@@ -140,7 +137,7 @@ const SportsPage: React.FunctionComponent = () => {
     );
   }, []);
 
-  return (!doneLoading ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
+  return (
     <div>
       <div style={{ marginBottom: '10px' }}>
         <Row gutter={[8, 8]}>
@@ -160,30 +157,35 @@ const SportsPage: React.FunctionComponent = () => {
         </Row>
       </div>
 
-      <Table dataSource={sports} pagination={{ pageSize: 20 }} onRow={rowProps}>
-        <Table.Column dataIndex="id" title="Index" width={25} />
-        <Table.Column dataIndex="name" title="Sport" />
-        <Table.Column
-          title="Variants"
-          render={renderTags}
-        />
-        <Table.Column
-          render={renderActionColumn}
-          fixed="right"
-        />
-      </Table>
+      {
+        !doneLoading ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
+        <>
+          <Table dataSource={sports} pagination={{ pageSize: 20 }} onRow={rowProps}>
+            <Table.Column dataIndex="id" title="Index" width={25} />
+            <Table.Column dataIndex="name" title="Sport" />
+            <Table.Column
+              title="Variants"
+              render={renderTags}
+            />
+            <Table.Column
+              render={renderActionColumn}
+              fixed="right"
+            />
+          </Table>
 
-      <AddSportModal
-        open={isAddModalVisible}
-        onCancel={handleCloseAddModal}
-        onSubmit={handleAddModalSubmit}
-      />
-      <EditSportModal
-        open={isEditModalVisible}
-        onCancel={handleCloseEditModal}
-        onSubmit={handleEditModalSubmit}
-        sport={sportEdit}
-      />
+          <AddSportModal
+            open={isAddModalVisible}
+            onCancel={handleCloseAddModal}
+            onSubmit={handleAddModalSubmit}
+          />
+          <EditSportModal
+            open={isEditModalVisible}
+            onCancel={handleCloseEditModal}
+            onSubmit={handleEditModalSubmit}
+            sport={sportEdit}
+          />
+        </>
+      }
     </div>
   );
 };

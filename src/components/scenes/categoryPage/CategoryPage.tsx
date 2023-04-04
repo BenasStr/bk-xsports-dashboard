@@ -124,7 +124,7 @@ const CategoryPage: React.FunctionComponent = () => {
     );
   }, []);
 
-  return (!doneLoading ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
+  return (
     <>
       <div style={{ marginBottom: '10px' }}>
         <Row gutter={[8, 8]}>
@@ -144,30 +144,35 @@ const CategoryPage: React.FunctionComponent = () => {
         </Row>
       </div>
 
-      <Table dataSource={data} pagination={{ pageSize: 20 }} onRow={rowProps}>
-        <Table.Column key="index" dataIndex="id" title="Index" width={25} />
-        <Table.Column key="category" dataIndex="name" title="Category" />
-        <Table.Column
-          key="actionColumn"
-          render={renderActionColumn}
-          fixed="right"
-        />
-      </Table>
-
-      <AddCategoryModal 
-        open={isAddModalVisible} 
-        onCancel={handleCloseAddModal} 
-        onSubmit={handleAddModalSubmit} 
-        sportId={sportId} 
-      />
-
-      <EditCategoryModal 
-        open={isEditModalVisible} 
-        onCancel={handleCloseEditModal} 
-        onSubmit={handleEditModalSubmit} 
-        category={categoryEdit} 
-        sportId={sportId} 
-      />
+      {
+        !doneLoading ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
+        <>
+          <Table dataSource={data} pagination={{ pageSize: 20 }} onRow={rowProps}>
+            <Table.Column key="index" dataIndex="id" title="Index" width={25} />
+            <Table.Column key="category" dataIndex="name" title="Category" />
+            <Table.Column
+              key="actionColumn"
+              render={renderActionColumn}
+              fixed="right"
+            />
+          </Table>
+    
+          <AddCategoryModal 
+            open={isAddModalVisible} 
+            onCancel={handleCloseAddModal} 
+            onSubmit={handleAddModalSubmit} 
+            sportId={sportId} 
+          />
+    
+          <EditCategoryModal 
+            open={isEditModalVisible} 
+            onCancel={handleCloseEditModal} 
+            onSubmit={handleEditModalSubmit} 
+            category={categoryEdit} 
+            sportId={sportId} 
+          />
+        </>
+      }
     </>
   );
 };

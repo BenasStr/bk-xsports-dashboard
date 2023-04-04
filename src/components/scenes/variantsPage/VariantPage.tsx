@@ -101,7 +101,7 @@ const VariantPage: React.FunctionComponent = () => {
 
   return ( !doneLoading ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
     <div>
-      <div style={{marginBottom: '10px'}}>
+      <div style={{marginBottom: '10px', float:'right'}}>
         <Button onClick={() => handleOpenAddModal()}>+ Add Variant</Button>
       </div>
 

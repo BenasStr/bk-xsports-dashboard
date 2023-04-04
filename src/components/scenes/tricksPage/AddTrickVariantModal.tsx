@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Button, Modal, ModalProps, Select, message, SelectProps } from 'antd';
 import { TrickVariantEditPayload, VariantPayload } from '../../../api/apipayloads';
 import { createTrickVariant } from '../../../api/api';
 import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';
 import { LoadingOutlined } from '@ant-design/icons';
+import VideoUploader from '../../videos/videoUploader';
 
 interface Props extends ModalProps {
     sportId: number;
@@ -16,6 +17,7 @@ interface Props extends ModalProps {
 
 const AddTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sportId, categoryId, trickId, variants }) => {
     const [form] = Form.useForm<TrickVariantEditPayload>();
+    const [videoError, setVideoError] = useState<boolean>(true);
     const { sessionStorage } = useSessionStorage();
 
     const handleFormSubmit = async (values: TrickVariantEditPayload) => {
@@ -37,6 +39,10 @@ const AddTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, 
         });
     }
 
+    const handleVidoeUpload = () => {
+        setVideoError(true);
+    }
+
     return (
         <Modal
             open={open}
@@ -51,6 +57,11 @@ const AddTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, 
                     </h2>
 
                     <Form form={form} onFinish={handleFormSubmit}>
+
+                        <Form.Item name="video">
+                            <VideoUploader onUplaod={handleVidoeUpload}></VideoUploader>
+                        </Form.Item>
+
                         <Form.Item name="shortDescription" rules={[{ required: true, message: 'Missing short description for trick!' }]}>
                             <TextArea placeholder='Short Description' rows={4} maxLength={100} />
                         </Form.Item>
