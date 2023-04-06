@@ -2,7 +2,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { Button, message, Popconfirm, Space, Table } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
-import { deleteVariant, getVariants } from "../../../api/api";
+import { deleteVariant, getVariants } from "../../../api/xsports/variantsApi";
 import { VariantPayload } from "../../../api/apipayloads";
 import { useSessionStorage } from "../../../hooks";
 import AddVariantModal from "./AddVariantModal";

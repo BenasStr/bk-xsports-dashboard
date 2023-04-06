@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Modal, ModalProps, Select, message, SelectProps } from 'antd';
+import { Form, Button, Modal, ModalProps, Select, message, SelectProps } from 'antd';
 import { TrickVariantEditPayload, VariantPayload } from '../../../api/apipayloads';
-import { createTrickVariant } from '../../../api/api';
+import { createTrickVariant } from '../../../api/xsports/tricksApi';
 import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';
 import { LoadingOutlined } from '@ant-design/icons';

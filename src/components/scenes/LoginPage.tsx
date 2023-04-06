@@ -1,8 +1,7 @@
 import { Button, Form, Input } from "antd";
 import { useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { login } from "../../api/api";
-import Text from "../generics/Text";
+import { login } from "../../api/xsports/authenticationApi";
 import "./LoginPage.css";
 import { useSessionStorage } from "../../hooks";
 import { Token } from "../../api/apipayloads";

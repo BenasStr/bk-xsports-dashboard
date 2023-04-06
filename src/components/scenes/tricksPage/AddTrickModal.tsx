@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Form, Input, Button, Modal, ModalProps, Radio, Space, RadioChangeEvent, Transfer, Select, Spin } from 'antd';
-import { DifficultyPayload, TrickBasicPayload, TrickEditPayload, TrickPayload } from '../../../api/apipayloads';
-import { createTrick, getDifficulties, getTricksByVariants} from '../../../api/api';
+import React, { useState } from 'react';
+import { Form, Input, Button, Modal, ModalProps, Radio, Space, RadioChangeEvent, Select, message } from 'antd';
+import { DifficultyPayload, TrickEditPayload, TrickPayload } from '../../../api/apipayloads';
+import { createTrick } from '../../../api/xsports/tricksApi';
 import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';
 import { SelectProps } from 'rc-select';
@@ -21,13 +21,16 @@ const AddTrickModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
   const [form] = Form.useForm<TrickEditPayload>();
   const [difficulty, setDifficulty] = useState(0);
   const {sessionStorage} = useSessionStorage();
+  const [video, setVideo] = useState<RcFile>();
 
   const handleFormSubmit = async (values: TrickEditPayload) => {
     try {
       await createTrick(sessionStorage?sessionStorage:"", sportId, categoryId, values);
-      onSubmit()
+      // await uploadVideo(sessionStorage? sessionStorage:"", sportId, categoryId, )
+      onSubmit();
     } catch (err) {
-      console.log("Failed to create trick") 
+      console.log(err); 
+      message.error("Failed to create trick!");
     }
   };
 
@@ -53,6 +56,8 @@ const AddTrickModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
 
   const handleVidoeUpload = (file: RcFile) => {
     console.log(file);
+    setVideo(file);
+    console.log(video);
   }
 
   return ( 
@@ -69,7 +74,7 @@ const AddTrickModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
       </h2>  
 
         <Form form={form} onFinish={handleFormSubmit}>
-        <Form.Item name="name" rules={[{ required: true, message: 'Missing name for trick!' }]}>
+        <Form.Item name="name" rules={[{ required: true, message: 'Missing name!' }]}>
           <Input placeholder='Name'/>
         </Form.Item>
 
@@ -88,11 +93,11 @@ const AddTrickModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
           </Radio.Group> 
         </Form.Item>
 
-        <Form.Item name="shortDescription" rules={[{ required: true, message: 'Missing short description for trick!' }]}>
+        <Form.Item name="shortDescription" rules={[{ required: true, message: 'Missing short description!' }]}>
           <TextArea placeholder='Short Description' rows={4} maxLength={100}/>
         </Form.Item>
 
-        <Form.Item name="description" rules={[{ required: true, message: 'Missing description for trick!' }]}>
+        <Form.Item name="description" rules={[{ required: true, message: 'Missing description!' }]}>
           <TextArea placeholder='Description' rows={8} maxLength={250}/>
         </Form.Item>
 

@@ -1,10 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, message, List, Checkbox, Modal, ModalProps } from 'antd';
-import { SportEditPayload, VariantPayload } from '../../../api/apipayloads';
-import { createSport, getVariants, uploadSportImage } from '../../../api/api';
-import { LoadingOutlined } from '@ant-design/icons';
-import { useSessionStorage } from '../../../hooks';
-import ImageUploader from '../../images/ImageUploader';
+import React  from 'react';
+import { Form, Input, Button, Modal, ModalProps } from 'antd';
 
 interface Props extends ModalProps {
     onSubmit: () => void;

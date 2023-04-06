@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Form, Input, Button, message, List, Checkbox, Modal, ModalProps, Image } from 'antd';
 import { SportEditPayload, SportPayload, VariantPayload } from '../../../api/apipayloads';
-import { getImage, getVariants, updateSport, uploadSportImage } from '../../../api/api';
+import { updateSport, uploadSportImage } from '../../../api/xsports/sportsApi';
+import { getVariants } from '../../../api/xsports/variantsApi';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import ImageUploader from '../../images/ImageUploader';
@@ -16,7 +17,6 @@ const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
   const [form] = Form.useForm<SportEditPayload>();
   const { sessionStorage } = useSessionStorage();
   const [variants, setVariants] = useState<VariantPayload[]>([]);
-  const [image, setImage] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<FormData>();
 
   const initialValues = useMemo(() => ({
@@ -35,22 +35,6 @@ const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
       setVariants(data);
     } catch (err) {
       message.error("Failed to retrieve variants!");
-    }
-  }
-
-  const loadImage = async () => {
-    if(!open || sport.photo == "" || sport.photo == null) {
-      return;
-    }
-    try {
-      const data = await getImage(sessionStorage ? sessionStorage : "", sport.photo);
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImage(reader.result as string);
-      }
-    } catch(err) {
-      console.log(err);
-      message.error("Failed to retrieve image!");
     }
   }
 
@@ -74,10 +58,7 @@ const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
 
   useEffect(() => {
     getVariantsData();
-    if(open) {
-      loadImage();
-    }
-  }, [open]);
+  }, []);
 
   return (!variants ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
 

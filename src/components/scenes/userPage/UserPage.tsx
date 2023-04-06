@@ -1,11 +1,10 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Col, Input, Popconfirm, Row, Select, Space, Table, Tag } from "antd";
+import { Button, Col, Popconfirm, Row, Select, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
-import { getUsers } from "../../../api/api";
+import { getUsers } from "../../../api/xsports/usersApi";
 import { UserPayload, UsersPage } from "../../../api/apipayloads";
 import { useSessionStorage } from "../../../hooks";
-import Search from "../../generics/Search";
 import SearchInput from "../../generics/Search";
 import AddUserModal from "./AddUserModal";
 

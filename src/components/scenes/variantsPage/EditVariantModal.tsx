@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input, Button, message, Modal, ModalProps } from 'antd';
 import { SportEditPayload, VariantEditPayload, VariantPayload } from '../../../api/apipayloads';
-import { updateVariant } from '../../../api/api';;
+import { updateVariant } from '../../../api/xsports/variantsApi';
 import { useSessionStorage } from '../../../hooks';
 
 interface Props extends ModalProps {

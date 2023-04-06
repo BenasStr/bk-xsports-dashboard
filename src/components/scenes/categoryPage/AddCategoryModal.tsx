@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Modal, ModalProps, message } from 'antd';
 import { CategoryEditPayload } from '../../../api/apipayloads';
-import { createCategory, uploadCategoryImage } from '../../../api/api';
+import { createCategory, uploadCategoryImage } from '../../../api/xsports/categoriesApi';
 import { useSessionStorage } from '../../../hooks';
 import ImageUploader from '../../images/ImageUploader';
 

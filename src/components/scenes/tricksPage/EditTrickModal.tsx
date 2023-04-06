@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { Form, Input, Button, message, Modal, ModalProps, Radio, Space, Select, RadioChangeEvent, SelectProps, Upload, Card } from 'antd';
+import { Form, Input, Button, message, Modal, ModalProps, Radio, Space, Select, RadioChangeEvent, SelectProps, Card } from 'antd';
 import { DifficultyPayload, SportEditPayload, TrickPayload } from '../../../api/apipayloads';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';
 import { DefaultOptionType } from 'antd/es/select';
-import { updateTrick } from '../../../api/api';
+import { updateTrick } from '../../../api/xsports/tricksApi';
 import VideoUploader from '../../videos/videoUploader';
 
 interface Props extends ModalProps {

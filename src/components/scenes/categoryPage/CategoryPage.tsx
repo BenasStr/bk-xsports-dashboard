@@ -2,7 +2,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Col, message, Popconfirm, Row, Select, Space, Table } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
-import { deleteCategory, getCategories } from "../../../api/api";
+import { deleteCategory, getCategories } from "../../../api/xsports/categoriesApi";
 import { CategoryPayload } from "../../../api/apipayloads";
 import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../../hooks";
@@ -33,7 +33,7 @@ const CategoryPage: React.FunctionComponent = () => {
       message.error("Failed to reterieve categories!");
     }
     setLoadingState(true);
-  }
+  };
 
   const handleOpenAddModal = useCallback(() => {
     setIsAddModalVisible(true);

@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Form, Input, Button, Modal, ModalProps, message, Image } from 'antd';
 import { CategoryEditPayload, CategoryPayload } from '../../../api/apipayloads';
-import { getImage, updateCategory, uploadCategoryImage } from '../../../api/api';
+import { updateCategory, uploadCategoryImage } from '../../../api/xsports/categoriesApi';
 import { useSessionStorage } from '../../../hooks';
 import ImageUploader from '../../images/ImageUploader';
 
@@ -15,7 +15,6 @@ const EditCategoryModal: React.FunctionComponent<Props> = ({ open, onCancel, onS
   const [form] = Form.useForm<CategoryEditPayload>();
   const { sessionStorage } = useSessionStorage();
   const [uploadedImage, setUploadedImage] = useState<FormData>();
-  const [image, setImage] = useState<string | null>(null);
 
   const initialValues = useMemo(() => ({
     name: category.name,
@@ -36,28 +35,6 @@ const EditCategoryModal: React.FunctionComponent<Props> = ({ open, onCancel, onS
   const handleImageUpload = (image: FormData) => {
     setUploadedImage(image);
   }
-
-  const loadImage = async () => {
-    if(!open || category.photo == "" || category.photo == null) {
-      return;
-    }
-    try {
-      const data = await getImage(sessionStorage ? sessionStorage : "", category.photo);
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImage(reader.result as string);
-      }
-    } catch(err) {
-      console.log(err);
-      message.error("Failed to retrieve image!");
-    }
-  }
-
-  useEffect(() => {
-    if(open) {
-      loadImage();
-    }
-  }, [open]);
 
   return (
     <Modal destroyOnClose

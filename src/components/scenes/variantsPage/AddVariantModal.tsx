@@ -1,8 +1,7 @@
 import React from 'react';
 import { Form, Input, Button, message, Modal, ModalProps } from 'antd';
-import type { RcFile } from 'antd/es/upload/interface';
 import { VariantEditPayload } from '../../../api/apipayloads';
-import { createVariant } from '../../../api/api';
+import { createVariant } from '../../../api/xsports/variantsApi';
 import { useSessionStorage } from '../../../hooks';
 
 interface Props extends ModalProps {

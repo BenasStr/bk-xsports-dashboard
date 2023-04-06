@@ -2,7 +2,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Col, Input, message, Popconfirm, Row, Select, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
-import { deleteSport, getSports } from "../../../api/api";
+import { deleteSport, getSports } from "../../../api/xsports/sportsApi";
 import { SportPayload } from "../../../api/apipayloads";
 import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../../hooks";

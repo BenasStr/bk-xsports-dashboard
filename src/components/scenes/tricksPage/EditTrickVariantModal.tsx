@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Form, Input, Button, message, List, Checkbox, Modal, ModalProps, Image, Select, SelectProps, Card } from 'antd';
 import { SportEditPayload, TrickPayload, VariantPayload } from '../../../api/apipayloads';
-import { getImage, getVariants, updateSport, uploadSportImage } from '../../../api/api';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';

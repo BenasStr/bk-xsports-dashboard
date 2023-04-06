@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, List, Checkbox, Modal, ModalProps } from 'antd';
 import { SportEditPayload, VariantPayload } from '../../../api/apipayloads';
-import { createSport, getVariants, uploadSportImage } from '../../../api/api';
+import { createSport, uploadSportImage } from '../../../api/xsports/sportsApi';
+import { getVariants } from '../../../api/xsports/variantsApi';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import ImageUploader from '../../images/ImageUploader';
