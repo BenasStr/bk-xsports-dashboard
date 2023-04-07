@@ -14,7 +14,7 @@ interface Props extends ModalProps {
   onSubmit: () => void;
 }
 
-const videoUrl = 'https://app-benasstr.cloud.okteto.net/api/videos/trick-1.mp4';
+const videoUrl = 'https://app-benasstr.cloud.okteto.net/api/v1/videos/trick-1.mp4';
 
 const EditTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sportId, categoryId, trick, variants}) => {
   console.log(trick);

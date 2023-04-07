@@ -1,5 +1,5 @@
 import { DownOutlined, UserOutlined } from "@ant-design/icons";
-import { Breadcrumb, Dropdown, Layout, Menu, MenuProps, Space } from "antd";
+import { Breadcrumb, Dropdown, Layout, Menu, MenuProps, Space, message } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { Content, Header } from "antd/es/layout/layout";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -7,6 +7,33 @@ import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../hooks";
 import { typeSafeSwitch } from "../../utils/generics";
 import "./MainLayout.css";
+import { getMe, getUser } from "../../api/xsports/usersApi";
+import { UserBasicPayload } from "../../api/apipayloads";
+
+type MenuItems =
+  | "SPORTS"
+  | "VARIANTS"
+  | "USERS";
+
+type UserMenuItems = 
+  | "ACCOUNT"
+  | "LOGOUT";
+
+const menuItemKeys: MenuItems[] = [
+  "SPORTS",
+  "VARIANTS",
+  "USERS"
+];
+
+const userMenuItemKeys: UserMenuItems[] = ["ACCOUNT", "LOGOUT"];
+
+const getNameByMenuKey = typeSafeSwitch<MenuItems | UserMenuItems, string>({
+  SPORTS: "Sports",
+  VARIANTS: "Variants",
+  USERS: "Users",
+  ACCOUNT: "Account",
+  LOGOUT: "Log out",
+});
 
 const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: string}>> = ({
   currentKey,
@@ -14,8 +41,23 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: s
 }) => {
   const [keyState, setKeyState] = useState<string>(currentKey); 
   const [breadcrumbs, setBreadCrumbs] = useState<string[]>([]);
-  const { setSessionStorage } = useSessionStorage();
+  const [me, setMe] = useState<string>("");
+  const {sessionStorage, setSessionStorage } = useSessionStorage();
   const history = useHistory();
+
+  const getMeData = useCallback(async () => {
+    try {
+      const data: UserBasicPayload = await getMe(sessionStorage?sessionStorage:"");
+      setMe(
+        data.nickname == null?
+          data.name + " " + data.surname :
+          data.nickname
+      );
+    } catch(err) {
+      console.log(err);
+      message.error("Failed to get user info!");
+    }
+  }, []);
 
   const handleMenuItemClick = useCallback(({ key }: { key: string }) => {
 
@@ -68,6 +110,7 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: s
   );
 
   useEffect(() => {
+    getMeData()
     const splitHistory = history.location.pathname.split('/');
     setBreadCrumbs(splitHistory.filter((value, index) => index % 2 !== 0));
   }, [history.location.pathname]);
@@ -86,7 +129,7 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: s
                 >
                 <Space>
                   <UserOutlined />
-                  This user display name
+                  {me}
                   <DownOutlined
                     style={{ fontSize: "12px", cursor: "pointer" }}
                   />
@@ -114,30 +157,5 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: s
     </Layout>
   );
 };
-
-type MenuItems =
-  | "SPORTS"
-  | "VARIANTS"
-  | "USERS";
-
-type UserMenuItems = 
-  | "ACCOUNT"
-  | "LOGOUT";
-
-const menuItemKeys: MenuItems[] = [
-  "SPORTS",
-  "VARIANTS",
-  "USERS"
-];
-
-const userMenuItemKeys: UserMenuItems[] = ["ACCOUNT", "LOGOUT"];
-
-const getNameByMenuKey = typeSafeSwitch<MenuItems | UserMenuItems, string>({
-  SPORTS: "Sports",
-  VARIANTS: "Variants",
-  USERS: "Users",
-  ACCOUNT: "Account",
-  LOGOUT: "Log out",
-});
 
 export default MainLayout;

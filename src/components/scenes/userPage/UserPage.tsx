@@ -1,34 +1,90 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Col, Popconfirm, Row, Select, Space, Table, Tag } from "antd";
+import { Button, Col, Popconfirm, Row, Select, SelectProps, Space, Table, Tag, message } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
-import { getUsers } from "../../../api/xsports/usersApi";
+import { deleteUser, getUsers } from "../../../api/xsports/usersApi";
 import { UserPayload, UsersPage } from "../../../api/apipayloads";
 import { useSessionStorage } from "../../../hooks";
 import SearchInput from "../../generics/Search";
 import AddUserModal from "./AddUserModal";
 
+const roles: string[] = [
+  "ADMIN",
+  "MODERATOR",
+  "USER",
+  "ALL"
+] 
+
 const UserPage: React.FunctionComponent = () => {
   const [data, setData] = useState<UsersPage>();
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
-  const {sessionStorage} = useSessionStorage();
+  const [selectedRole, setSelectedRole] = useState("");
+  const { sessionStorage } = useSessionStorage();
 
-  const getCategoriesData = async () => {
+  const getUsersData = async (search: string) => {
     try {
-      const data: UsersPage = await getUsers(sessionStorage?sessionStorage:"");
+      const data: UsersPage = await getUsers(sessionStorage ? sessionStorage : "", search, selectedRole);
+      console.log(data);
       setData(data);
     } catch (err) {
-      console.log("Failed to reterieve categories")
+      console.log(err);
+      message.error("Failed to reterieve users!")
     }
-  }
+  };
+
+  const handleDeleteClick = async (id: number) => {
+    try {
+      await deleteUser(sessionStorage?sessionStorage:"", id);
+    } catch (err) {
+      console.log(err);
+      message.error("Failed to delete user!");
+    }
+    await getUsersData("");
+  };
 
   const renderRole = useCallback((user: UserPayload) => {
     return (
-      <Tag color={user.role == "ADMIN"? 'red' : 'purple'} key={user.id}>
+      <Tag color={setTagColor(user.role)} key={user.id}>
         {user.role}
       </Tag>
     );
   }, []);
+
+  const renderName = useCallback((user: UserPayload) => {
+    const name = user.nickname == null || user.nickname == "" ?
+      user.name + " " + user.surname :
+      user.nickname
+    return (
+      <>
+        {name}
+      </>
+    );
+  }, [])
+
+  const setTagColor = (role: string) => {
+    if (role === "ADMIN") {
+      return 'red';
+    } else if (role === "MODERATOR") {
+      return 'purple';
+    }
+    return 'green';
+  };
+
+  const mapToSelectProps = (): SelectProps["options"] => {
+    return roles.map((role) => {
+      return {
+        value: role,
+        label: role
+      }});
+  };
+
+  const handleChange = (value: string) => {
+    if (value === "ALL") {
+      setSelectedRole("");
+    } else {
+      setSelectedRole(value);
+    }
+  };
 
   const handleOpenAddModal = useCallback(() => {
     setIsAddModalVisible(true);
@@ -40,77 +96,104 @@ const UserPage: React.FunctionComponent = () => {
 
   const handleModalSubmit = useCallback(() => {
     handleCloseModal();
-    console.log("uga buga my guy");
+    getUsersData("");
   }, []);
 
   const handleSearch = (value: string) => {
-    console.log(value);
+    getUsersData(value);
   }
 
   useEffect(() => {
-    getCategoriesData()
+    getUsersData("")
   }, []);
 
+  const renderActionColumn = (text: string, record: UserPayload) => {
+    if (record.role === "ADMIN") {
+      return <></>;
+    }
+    return (
+      <div style={{ float: "right" }}>
+        <Space>
+          <Popconfirm
+            placement="topRight"
+            title={"Delete this user?"}
+            onConfirm={() => handleDeleteClick(record.id)}
+            okText="Yes"
+            cancelText="Cancel"
+          >
+            <Button>
+              <DeleteOutlined />
+            </Button>
+          </Popconfirm>
+        </Space>
+      </div>
+    );
+  };
+
+
   return (!data ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
-  <>
-    <div style={{ marginBottom: '10px' }}>
+    <>
+      <div style={{ marginBottom: '10px' }}>
         <Row gutter={[8, 8]}>
           <Col span={8}>
-            <SearchInput onSearch={handleSearch}/>
+            <SearchInput onSearch={handleSearch} />
           </Col>
 
           <Col span={8}>
-            <Select/>
+            <Select 
+              onChange={handleChange}
+              placeholder="Role Filter" 
+              options={mapToSelectProps()}
+              style={{ width: '140px' }}
+            />
           </Col>
 
           <Col span={8}>
-            <div style={{float: 'right'}}>
+            <div style={{ float: 'right' }}>
               <Button onClick={() => handleOpenAddModal()}>+ Add Moderator</Button>
             </div>
           </Col>
         </Row>
       </div>
-    <Table dataSource={data.items} pagination={{ pageSize: data.items_per_page, current: data.page_index, total: data.total_items}}>
-      <Table.Column key="index" dataIndex="id" title="Index" width={25}/>
-      <Table.Column key="nickname" dataIndex="nickname" title="Name" />
-      <Table.Column 
-          title="Role" 
+      <Table dataSource={data.items} pagination={{ pageSize: data.items_per_page, current: data.page_index, total: data.total_items }}>
+        <Table.Column
+          key="index"
+          dataIndex="id"
+          title="Index"
+          width={25}
+        />
+
+        <Table.Column
+          key="name"
+          title="Name"
+          render={renderName}
+        />
+
+        <Table.Column
+          key="email"
+          dataIndex="email"
+          title="Email"
+        />
+
+        <Table.Column
+          key="role"
+          title="Role"
           render={renderRole}
         />
-      <Table.Column
-        key="actionColumn"
-        render={renderActionColumn}
-        fixed="right"
+
+        <Table.Column
+          key="actionColumn"
+          render={renderActionColumn}
+          fixed="right"
+        />
+      </Table>
+
+      <AddUserModal
+        open={isAddModalVisible}
+        onCancel={handleCloseModal}
+        onSubmit={handleModalSubmit}
       />
-    </Table>
-
-    <AddUserModal 
-      open={isAddModalVisible}
-      onCancel={handleCloseModal}
-      onSubmit={handleModalSubmit}
-    />
-  </>
-  );
-};
-
-const renderActionColumn = () => {
-  return (
-    <div style={{float: "right"}}>
-      <Space>
-        <Button>Edit</Button>
-        <Popconfirm
-            placement="topRight"
-            title={"Delete this variant?"}
-            // onConfirm={() => handleDeleteClick(variant.id)}
-            okText="Yes"
-            cancelText="Cancel"
-          >
-            <Button>
-              <DeleteOutlined/>
-            </Button>
-          </Popconfirm>
-      </Space>
-    </div>
+    </>
   );
 };
 

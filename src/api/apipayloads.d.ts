@@ -29,6 +29,15 @@ export interface UserPayload {
   blocked: boolean;
 }
 
+export interface UserBasicPayload {
+  id: number;
+  name: string;
+  surname: string;
+  nickname: string;
+  photoUrl: string;
+  isBlocked: boolean;
+}
+
 export interface UserEditPayload {
   name: string
   surname: string

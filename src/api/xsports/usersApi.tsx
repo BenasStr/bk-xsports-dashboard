@@ -2,9 +2,9 @@ import { API_XSPORTS_PREFIX } from "../api";
 import axios, { AxiosResponse } from "axios";
 import { UserEditPayload } from "../apipayloads";
 
-export const getUsers = async (token: string) => {
+export const getUsers = async (token: string, search: string, role: string) => {
     const response: AxiosResponse<any, any> = await axios.get(
-        `${API_XSPORTS_PREFIX}/users`,
+        `${API_XSPORTS_PREFIX}/users?search=${search?search:""}&role=${role?role:""}`,
         {
             headers: {
                 "Content-Type": "application/json",
@@ -28,9 +28,23 @@ export const getUser = async (token: string, userId: number) => {
     return response.data.data
 }
 
+export const getMe = async (token: string) => {
+    const response: AxiosResponse<any, any> = await axios.get(
+        `${API_XSPORTS_PREFIX}/users/me`,
+        {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+    return response.data.data
+}
+
 export const createUser = async (token: string, userPayload: UserEditPayload) => {
     const response: AxiosResponse<any, any> = await axios.post(
         `${API_XSPORTS_PREFIX}/users`,
+        userPayload,
         {
             headers: {
                 "Content-Type": "application/json",
