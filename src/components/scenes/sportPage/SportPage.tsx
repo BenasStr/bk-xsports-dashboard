@@ -13,6 +13,7 @@ import SearchInput from "../../generics/Search";
 const SportsPage: React.FunctionComponent = () => {
   const [sports, setSports] = useState<SportPayload[]>();
   const [doneLoading, setLoadingState] = useState<boolean>(false);
+  const [searchValue, setSearchValue] = useState<string>("");
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
   const { sessionStorage } = useSessionStorage();
@@ -51,7 +52,7 @@ const SportsPage: React.FunctionComponent = () => {
   const getSportsData = async () => {
     setLoadingState(false);
     try {
-      const data: SportPayload[] = await getSports(sessionStorage ? sessionStorage : "");
+      const data: SportPayload[] = await getSports(sessionStorage ? sessionStorage : "", searchValue);
       setSports(data);
     } catch (err) {
       message.error("Failed to reterieve sports!")
@@ -83,7 +84,8 @@ const SportsPage: React.FunctionComponent = () => {
   }, []);
 
   const handleSearch = (value: string) => {
-    console.log(value);
+    setSearchValue(value);
+    getSportsData();
   }
 
   const renderTags = useCallback((sport: SportPayload) => {

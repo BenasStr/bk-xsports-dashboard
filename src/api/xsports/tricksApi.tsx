@@ -2,9 +2,9 @@ import { API_XSPORTS_PREFIX } from "../api";
 import axios, { AxiosResponse } from "axios";
 import { TrickEditPayload, TrickVariantEditPayload } from "../apipayloads";
 
-export const getTricks = async (token: string, sportId: number, categoryId: number) => {
+export const getTricks = async (token: string, sportId: number, categoryId: number, search: string) => {
     const response: AxiosResponse<any, any> = await axios.get(
-        `${API_XSPORTS_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks?extended=true`,
+        `${API_XSPORTS_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks?search=${search}&extended=true`,
         {
             headers: {
                 "Content-Type": "application/json",

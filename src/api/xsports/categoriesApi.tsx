@@ -2,9 +2,9 @@ import { API_XSPORTS_PREFIX } from "../api";
 import axios, { AxiosResponse } from "axios";
 import { CategoryEditPayload } from "../apipayloads";
 
-export const getCategories = async (token: string, sportId: number) => {
+export const getCategories = async (token: string, sportId: number, search: string) => {
     const response: AxiosResponse<any, any> = await axios.get(
-        `${API_XSPORTS_PREFIX}/sports/${sportId}/categories`,
+        `${API_XSPORTS_PREFIX}/sports/${sportId}/categories?search=${search}`,
         {
             headers: {
                 "Content-Type": "application/json",

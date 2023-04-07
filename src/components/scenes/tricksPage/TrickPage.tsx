@@ -20,6 +20,8 @@ const TricksPage: React.FunctionComponent = () => {
 
   const [doneLoading, setLoadingState] = useState<boolean>(false);
 
+  const [searchValue, setSearchValue] = useState<string>("");
+
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [isAddVariantModalVisible, setIsAddVariantModalVisible] = useState<boolean>(false);
 
@@ -75,7 +77,7 @@ const TricksPage: React.FunctionComponent = () => {
   const getTricksData = async () => {
     try {
       setLoadingState(false);
-      const data: TrickPayload[] = await getTricks(sessionStorage ? sessionStorage : "", sportId, categoryId);
+      const data: TrickPayload[] = await getTricks(sessionStorage ? sessionStorage : "", sportId, categoryId, searchValue);
       setData(data);
       setLoadingState(true);
     } catch (err) {
@@ -151,7 +153,8 @@ const TricksPage: React.FunctionComponent = () => {
   }, []);
 
   const handleSearch = (value: string) => {
-    console.log(value);
+    setSearchValue(value)
+    getTricksData()
   };
 
   useEffect(() => {

@@ -15,6 +15,7 @@ const CategoryPage: React.FunctionComponent = () => {
   const [sportId] = useState<number>(parseInt(history.location.pathname.split("/")[2]));
   const [data, setData] = useState<CategoryPayload[]>();
   const [doneLoading, setLoadingState] = useState<boolean>(false);
+  const [searchValue, setSearchValue] = useState<string>("");
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
   const { sessionStorage } = useSessionStorage();
@@ -27,7 +28,7 @@ const CategoryPage: React.FunctionComponent = () => {
   const getCategoriesData = async () => {
     setLoadingState(false);
     try {
-      const data: CategoryPayload[] = await getCategories(sessionStorage ? sessionStorage : "", sportId);
+      const data: CategoryPayload[] = await getCategories(sessionStorage ? sessionStorage : "", sportId, searchValue);
       setData(data)
     } catch (err) {
       message.error("Failed to reterieve categories!");
@@ -66,7 +67,8 @@ const CategoryPage: React.FunctionComponent = () => {
   }, []);
 
   const handleSearch = (value: string) => {
-    console.log(value);
+    setSearchValue(value)
+    getCategoriesData()
   };
 
   const handleDeleteClick = useCallback((id: number) => async (event: MouseEvent) => {
