@@ -17,7 +17,6 @@ interface Props extends ModalProps {
 const videoUrl = 'https://app-benasstr.cloud.okteto.net/api/v1/videos/trick-1.mp4';
 
 const EditTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sportId, categoryId, trick, variants}) => {
-  console.log(trick);
   const [form] = Form.useForm<SportEditPayload>();
   const { sessionStorage } = useSessionStorage();
   const [videoError, setVideoError] = useState<boolean>(false);

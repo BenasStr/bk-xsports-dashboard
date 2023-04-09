@@ -20,8 +20,6 @@ const TricksPage: React.FunctionComponent = () => {
 
   const [doneLoading, setLoadingState] = useState<boolean>(false);
 
-  const [searchValue, setSearchValue] = useState<string>("");
-
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [isAddVariantModalVisible, setIsAddVariantModalVisible] = useState<boolean>(false);
 
@@ -74,10 +72,10 @@ const TricksPage: React.FunctionComponent = () => {
     setIsEditVariantModalVisible(true);
   }, []);
 
-  const getTricksData = async () => {
+  const getTricksData = async (search: string) => {
     try {
       setLoadingState(false);
-      const data: TrickPayload[] = await getTricks(sessionStorage ? sessionStorage : "", sportId, categoryId, searchValue);
+      const data: TrickPayload[] = await getTricks(sessionStorage ? sessionStorage : "", sportId, categoryId, search);
       setData(data);
       setLoadingState(true);
     } catch (err) {
@@ -132,15 +130,13 @@ const TricksPage: React.FunctionComponent = () => {
       console.log(err);
       message.error("Failed to delete trick!");
     }
-    await getTricksData();
+    await getTricksData("");
     setLoadingState(true)
   }, []);
 
   const handleVariantDeleteClick = useCallback((trickId: number, variantId: number) => async (event: any) => {
     event.stopPropagation();
     setLoadingState(false);
-    console.log(trickId)
-    console.log(variantId)
     try {
       await deleteTrickVariant(sessionStorage ? sessionStorage : "", sportId, categoryId, trickId, variantId);
       message.success("Deleted variant!");
@@ -148,17 +144,16 @@ const TricksPage: React.FunctionComponent = () => {
       console.log(err);
       message.error("Failed to delete trick!");
     }
-    await getTricksData();
+    await getTricksData("");
     setLoadingState(true)
   }, []);
 
   const handleSearch = (value: string) => {
-    setSearchValue(value)
-    getTricksData()
+    getTricksData(value)
   };
 
   useEffect(() => {
-    getTricksData()
+    getTricksData("")
     getDifficultiesData()
     getSportVariants()
   }, []);

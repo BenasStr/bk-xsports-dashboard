@@ -13,7 +13,6 @@ interface Props extends ModalProps {
 }
 
 const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sport }) => {
-  console.log(sport)
   const [form] = Form.useForm<SportEditPayload>();
   const { sessionStorage } = useSessionStorage();
   const [variants, setVariants] = useState<VariantPayload[]>([]);
@@ -45,7 +44,6 @@ const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
   const handleFormSubmit = async (values: SportEditPayload) => {
     try {
       await updateSport(sessionStorage ? sessionStorage : "", sport.id, values);
-      console.log(uploadedImage);
       if (uploadedImage != null) {
         await uploadSportImage(sessionStorage ? sessionStorage : "", sport.id, uploadedImage)
       }

@@ -15,7 +15,6 @@ const CategoryPage: React.FunctionComponent = () => {
   const [sportId] = useState<number>(parseInt(history.location.pathname.split("/")[2]));
   const [data, setData] = useState<CategoryPayload[]>();
   const [doneLoading, setLoadingState] = useState<boolean>(false);
-  const [searchValue, setSearchValue] = useState<string>("");
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
   const { sessionStorage } = useSessionStorage();
@@ -25,10 +24,10 @@ const CategoryPage: React.FunctionComponent = () => {
     photo: ''
   });
 
-  const getCategoriesData = async () => {
+  const getCategoriesData = async (search: string) => {
     setLoadingState(false);
     try {
-      const data: CategoryPayload[] = await getCategories(sessionStorage ? sessionStorage : "", sportId, searchValue);
+      const data: CategoryPayload[] = await getCategories(sessionStorage ? sessionStorage : "", sportId, search);
       setData(data)
     } catch (err) {
       message.error("Failed to reterieve categories!");
@@ -47,7 +46,7 @@ const CategoryPage: React.FunctionComponent = () => {
 
   const handleAddModalSubmit = useCallback(() => {
     setIsAddModalVisible(false);
-    getCategoriesData();
+    getCategoriesData("");
   }, []);
 
   const handleCloseEditModal = useCallback(() => {
@@ -57,7 +56,7 @@ const CategoryPage: React.FunctionComponent = () => {
 
   const handleEditModalSubmit = useCallback(() => {
     setIsEditModalVisible(false);
-    getCategoriesData();
+    getCategoriesData("");
   }, []);
 
   const handleEditButtonClick = useCallback((category: CategoryPayload) => (event: MouseEvent) => {
@@ -67,8 +66,7 @@ const CategoryPage: React.FunctionComponent = () => {
   }, []);
 
   const handleSearch = (value: string) => {
-    setSearchValue(value)
-    getCategoriesData()
+    getCategoriesData(value)
   };
 
   const handleDeleteClick = useCallback((id: number) => async (event: MouseEvent) => {
@@ -76,7 +74,7 @@ const CategoryPage: React.FunctionComponent = () => {
     setLoadingState(false);
     try {
       await deleteCategory(sessionStorage ? sessionStorage : "", sportId, id);
-      await getCategoriesData();
+      await getCategoriesData("");
       message.success("Deleted category!");
     } catch (err) {
       message.error("Delete failed!");
@@ -98,7 +96,7 @@ const CategoryPage: React.FunctionComponent = () => {
 
 
   useEffect(() => {
-    getCategoriesData()
+    getCategoriesData("")
   }, []);
 
   const renderActionColumn = useCallback((category: CategoryPayload) => {

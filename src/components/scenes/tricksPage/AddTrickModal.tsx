@@ -55,9 +55,7 @@ const AddTrickModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
   };
 
   const handleVidoeUpload = (file: RcFile) => {
-    console.log(file);
     setVideo(file);
-    console.log(video);
   }
 
   return ( 

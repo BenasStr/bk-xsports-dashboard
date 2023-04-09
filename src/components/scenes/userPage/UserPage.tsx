@@ -24,7 +24,6 @@ const UserPage: React.FunctionComponent = () => {
   const getUsersData = async (search: string) => {
     try {
       const data: UsersPage = await getUsers(sessionStorage ? sessionStorage : "", search, selectedRole);
-      console.log(data);
       setData(data);
     } catch (err) {
       console.log(err);

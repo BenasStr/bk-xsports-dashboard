@@ -13,7 +13,6 @@ import SearchInput from "../../generics/Search";
 const SportsPage: React.FunctionComponent = () => {
   const [sports, setSports] = useState<SportPayload[]>();
   const [doneLoading, setLoadingState] = useState<boolean>(false);
-  const [searchValue, setSearchValue] = useState<string>("");
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
   const { sessionStorage } = useSessionStorage();
@@ -36,7 +35,7 @@ const SportsPage: React.FunctionComponent = () => {
 
   const handleAddModalSubmit = useCallback(() => {
     setIsAddModalVisible(false);
-    getSportsData();
+    getSportsData("");
   }, [])
 
   const handleCloseEditModal = useCallback(() => {
@@ -46,13 +45,13 @@ const SportsPage: React.FunctionComponent = () => {
 
   const handleEditModalSubmit = useCallback(() => {
     setIsEditModalVisible(false);
-    getSportsData();
+    getSportsData("");
   }, []);
 
-  const getSportsData = async () => {
+  const getSportsData = async (search: string) => {
     setLoadingState(false);
     try {
-      const data: SportPayload[] = await getSports(sessionStorage ? sessionStorage : "", searchValue);
+      const data: SportPayload[] = await getSports(sessionStorage ? sessionStorage : "", search);
       setSports(data);
     } catch (err) {
       message.error("Failed to reterieve sports!")
@@ -79,13 +78,12 @@ const SportsPage: React.FunctionComponent = () => {
     } catch (err) {
       message.error("Unable to delete sport!")
     }
-    await getSportsData()
+    await getSportsData("")
     setLoadingState(true)
   }, []);
 
   const handleSearch = (value: string) => {
-    setSearchValue(value);
-    getSportsData();
+    getSportsData(value);
   }
 
   const renderTags = useCallback((sport: SportPayload) => {
@@ -111,7 +109,7 @@ const SportsPage: React.FunctionComponent = () => {
   };
 
   useEffect(() => {
-    getSportsData();
+    getSportsData("");
   }, []);
 
   const renderActionColumn = useCallback((sport: SportPayload) => {
