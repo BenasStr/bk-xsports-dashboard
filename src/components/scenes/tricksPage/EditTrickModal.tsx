@@ -1,12 +1,13 @@
-import React, { useState, useMemo } from 'react';
-import { Form, Input, Button, message, Modal, ModalProps, Radio, Space, Select, RadioChangeEvent, SelectProps, Card } from 'antd';
-import { DifficultyPayload, SportEditPayload, TrickPayload } from '../../../api/apipayloads';
-import { LoadingOutlined } from '@ant-design/icons';
+import React, { useState, useMemo, useCallback } from 'react';
+import { Form, Input, Button, message, Modal, ModalProps, Radio, Space, Select, RadioChangeEvent, SelectProps, Card, Popconfirm } from 'antd';
+import { DifficultyPayload, SportEditPayload, TrickEditPayload, TrickPayload } from '../../../api/apipayloads';
+import { DeleteOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';
 import { DefaultOptionType } from 'antd/es/select';
-import { updateTrick } from '../../../api/xsports/tricksApi';
+import { updateTrick, uploadVideo } from '../../../api/xsports/tricksApi';
 import VideoUploader from '../../videos/videoUploader';
+import { RcFile } from 'antd/es/upload';
 
 interface Props extends ModalProps {
   sportId: number;
@@ -17,13 +18,12 @@ interface Props extends ModalProps {
   onSubmit: () => void;
 }
 
-const videoUrl = 'https://app-benasstr.cloud.okteto.net/api/videos/trick-2.mp4';
-
 const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sportId, categoryId, tricks, trickEdit, difficulties }) => {
-  const [form] = Form.useForm<SportEditPayload>();
+  const [form] = Form.useForm<TrickEditPayload>();
   const { sessionStorage } = useSessionStorage();
   const [difficulty, setDifficulty] = useState<number>(0);
   const [videoError, setVideoError] = useState<boolean>(true);
+  const [video, setVideo] = useState<RcFile>();
 
   const initialValues = useMemo(() => ({
     name: trickEdit.name,
@@ -32,9 +32,12 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
     difficultyId: (difficulties.find(d => d.name === trickEdit.difficulty))?.id
   }), [trickEdit])
 
-  const handleFormSubmit = async (values: SportEditPayload) => {
+  const handleFormSubmit = async (values: TrickEditPayload) => {
     try {
-        await updateTrick(sessionStorage ? sessionStorage : "", sportId, categoryId, trickEdit.id, values);
+      const trick: TrickPayload = await updateTrick(sessionStorage ? sessionStorage : "", sportId, categoryId, trickEdit.id, values);
+      if (video != null) {
+        await uploadVideo(sessionStorage?sessionStorage:"", sportId, categoryId, trick.id, video);
+      }
       message.success("Updated trick!");
       onSubmit();
     } catch (err) {
@@ -74,8 +77,8 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
     setDifficulty(e.target.value);
   };
 
-  const handleVidoeUpload = () => {
-    setVideoError(true);
+  const handleVidoeUpload = (file: RcFile) => {
+    setVideo(file);
   }
 
   return (
@@ -102,7 +105,7 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
                   <p>Video not found!</p> 
                 </Card> :
                 <video width="100%" height="auto" controls>
-                  <source src={videoUrl} type="video/mp4" />
+                  <source src={trickEdit.video} type="video/mp4" />
                 </video>
             }
 

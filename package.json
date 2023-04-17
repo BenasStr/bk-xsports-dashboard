@@ -16,6 +16,7 @@
     "eslint": "^8.36.0",
     "eslint-plugin-react": "^7.32.2",
     "i": "^0.3.7",
+    "moment": "^2.29.4",
     "npm": "^9.4.2",
     "react": "^18.2.0",
     "react-easy-crop": "^4.7.4",

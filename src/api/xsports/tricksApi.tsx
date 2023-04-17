@@ -123,10 +123,12 @@ export const deleteTrickVariant = async (token: string, sportId: number, categor
     return response.data.data
 }
 
-export const uploadVideo = async (token: string, sportId: number, categoryId: number, trickId: number, variantId: number, video: any) => {
+export const uploadVideo = async (token: string, sportId: number, categoryId: number, trickId: number, video: any) => {
+    const fileData = new FormData();
+    fileData.append('file', video);
     const response: AxiosResponse<any, any> = await axios.post(
-        `${API_XSPORTS_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}/variants/${variantId}/video`,
-        video,
+        `${API_XSPORTS_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks/${trickId}/video`,
+        fileData,
         {
             headers: {
                 "Content-Type": "multipart/form-data",

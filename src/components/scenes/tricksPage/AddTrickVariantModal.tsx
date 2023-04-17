@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Form, Button, Modal, ModalProps, Select, message, SelectProps } from 'antd';
-import { TrickVariantEditPayload, VariantPayload } from '../../../api/apipayloads';
-import { createTrickVariant } from '../../../api/xsports/tricksApi';
+import { TrickPayload, TrickVariantEditPayload, VariantPayload } from '../../../api/apipayloads';
+import { createTrickVariant, uploadVideo } from '../../../api/xsports/tricksApi';
 import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';
 import { LoadingOutlined } from '@ant-design/icons';
 import VideoUploader from '../../videos/videoUploader';
+import { RcFile } from 'antd/es/upload';
+import { Session } from 'inspector';
 
 interface Props extends ModalProps {
     sportId: number;
@@ -17,12 +19,15 @@ interface Props extends ModalProps {
 
 const AddTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sportId, categoryId, trickId, variants }) => {
     const [form] = Form.useForm<TrickVariantEditPayload>();
-    const [videoError, setVideoError] = useState<boolean>(true);
     const { sessionStorage } = useSessionStorage();
+    const [video, setVideo] = useState<RcFile>();
 
     const handleFormSubmit = async (values: TrickVariantEditPayload) => {
         try {
-            await createTrickVariant(sessionStorage ? sessionStorage : "", sportId, categoryId, trickId, values);
+            const trick: TrickPayload = await createTrickVariant(sessionStorage ? sessionStorage : "", sportId, categoryId, trickId, values);
+            if (video != null) {
+                await uploadVideo(sessionStorage?sessionStorage:"", sportId, categoryId, trick.id, video);
+            }
             onSubmit()
         } catch (err) {
             console.log(err);
@@ -39,8 +44,8 @@ const AddTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, 
         });
     }
 
-    const handleVidoeUpload = () => {
-        setVideoError(true);
+    const handleVidoeUpload = (file: RcFile) => {
+        setVideo(file);
     }
 
     return (

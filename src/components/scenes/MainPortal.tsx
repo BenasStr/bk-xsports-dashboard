@@ -1,5 +1,6 @@
 import CategoryPage from "./categoryPage/CategoryPage";
 import MainLayout from "./MainLayout";
+import PublishPage from "./publishPage/PublishPage";
 import SportPage from "./sportPage/SportPage"
 import TricksPage from "./tricksPage/TrickPage";
 import AccountPage from "./userPage/AccountPage";
@@ -11,6 +12,7 @@ type PortalType =
 | "CATEGORIES" 
 | "TRICKS"
 | "VARIANTS"
+| "PUBLISH"
 | "USERS" 
 | "ACCOUNT";
 
@@ -28,6 +30,7 @@ const MainPrortal: React.FunctionComponent<React.PropsWithChildren<Props>> = ({
       {portalType === "SPORTS" && <SportPage/>}
       {portalType === "CATEGORIES" && <CategoryPage/>}
       {portalType === "TRICKS" && <TricksPage/>}
+      {portalType === "PUBLISH" && <PublishPage/>}
       {portalType === "VARIANTS" && <VariantPage/>}
       {portalType === "USERS" && <UserPage/>}
       {portalType === "ACCOUNT" && <AccountPage/>}

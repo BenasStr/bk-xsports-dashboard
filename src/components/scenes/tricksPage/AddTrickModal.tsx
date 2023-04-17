@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Modal, ModalProps, Radio, Space, RadioChangeEvent, Select, message } from 'antd';
 import { DifficultyPayload, TrickEditPayload, TrickPayload } from '../../../api/apipayloads';
-import { createTrick } from '../../../api/xsports/tricksApi';
+import { createTrick, uploadVideo } from '../../../api/xsports/tricksApi';
 import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';
 import { SelectProps } from 'rc-select';
@@ -25,8 +25,11 @@ const AddTrickModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
 
   const handleFormSubmit = async (values: TrickEditPayload) => {
     try {
-      await createTrick(sessionStorage?sessionStorage:"", sportId, categoryId, values);
-      // await uploadVideo(sessionStorage? sessionStorage:"", sportId, categoryId, )
+      const trick: TrickPayload = await createTrick(sessionStorage?sessionStorage:"", sportId, categoryId, values);
+      if (video != null) {
+        console.log(video);
+        await uploadVideo(sessionStorage? sessionStorage:"", sportId, categoryId, trick.id, video);
+      }
       onSubmit();
     } catch (err) {
       console.log(err); 

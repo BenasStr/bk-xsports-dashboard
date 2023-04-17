@@ -69,6 +69,7 @@ export const deleteSport = async (token: string, sportId: number) => {
 }
 
 export const uploadSportImage = async (token: string, sportId: number, image: any) => {
+    console.log(image)
     const response: AxiosResponse<any, any> = await axios.post(
         `${API_XSPORTS_PREFIX}/sports/${sportId}/image`,
         image,

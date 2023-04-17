@@ -51,6 +51,8 @@ export interface SportPayload {
   id: number
   name: string;
   photo: string;
+  publishStatus: string;
+  lastUpdated: string;
   variants: VariantPayload[];
 }
 
@@ -74,6 +76,8 @@ export interface CategoryPayload {
   id: number;
   name: string;
   photo: string;
+  publishStatus: string;
+  lastUpdated: string;
 }
 
 export interface CategoryEditPayload {
@@ -88,6 +92,9 @@ export interface TrickPayload {
   description: string
   difficulty: string;
   video: string;
+  publishStatus: string;
+  variantsCreated: string;
+  lastUpdated: string;
   trickParents: TrickBasicPayload[];
   trickChildren: TrickBasicPayload[];
   trickVariants: TrickBasicPayload[];
@@ -114,6 +121,37 @@ export interface TrickVariantEditPayload {
 
 // Difficulties
 export interface DifficultyPayload {
+  id: number;
+  name: string;
+}
+
+// Publish
+export interface PublishPayload {
+  id: number;
+  name: string;
+  releaseDate: string;
+  sport: {
+    id: number;
+    name: string
+    category: {
+      id: number;
+      name: string;
+    }
+  }
+}
+
+export interface PublishEditPayload {
+  releaseDate: string;
+  categoryId: number;
+}
+
+export interface PublishAvailableCategoriesPayload {
+  id: number;
+  name: string;
+  category: PublishSportCategories[]
+}
+
+interface PublishSportCategories {
   id: number;
   name: string;
 }

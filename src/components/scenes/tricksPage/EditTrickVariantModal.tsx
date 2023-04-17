@@ -5,6 +5,8 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';
 import VideoUploader from '../../videos/videoUploader';
+import { RcFile } from 'antd/es/upload';
+import { uploadVideo } from '../../../api/xsports/tricksApi';
 
 interface Props extends ModalProps {
   trick: TrickPayload;
@@ -14,12 +16,13 @@ interface Props extends ModalProps {
   onSubmit: () => void;
 }
 
-const videoUrl = 'https://app-benasstr.cloud.okteto.net/api/v1/videos/trick-1.mp4';
+const videoUrl = 'https://app-benasstr.cloud.okteto.net/api/videos/trick-1.mp4';
 
 const EditTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sportId, categoryId, trick, variants}) => {
   const [form] = Form.useForm<SportEditPayload>();
   const { sessionStorage } = useSessionStorage();
   const [videoError, setVideoError] = useState<boolean>(false);
+  const [video, setVideo] = useState<RcFile>();
   const initialValues = useMemo(() => ({
     name: trick.name,
     shortDescription: trick.shortDescription,
@@ -28,7 +31,11 @@ const EditTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel,
 
   const handleFormSubmit = async (values: SportEditPayload) => {
     try {
-      //   await updateSport(sessionStorage ? sessionStorage : "", sport.id, values);
+      const trick: TrickPayload = null;
+      // await updateTrickVariant(sessionStorage ? sessionStorage : "", sportId, categoryId, 0, 0, values);
+      if (video != null) {
+        await uploadVideo(sessionStorage?sessionStorage:"", sportId, categoryId, trick.id, video);
+      } 
       message.success("Updated sport!");
       onSubmit();
     } catch (err) {
@@ -45,8 +52,8 @@ const EditTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel,
     });
   }
 
-  const handleVidoeUpload = () => {
-    setVideoError(true);
+  const handleVidoeUpload = (file: RcFile) => {
+    setVideo(file);
   }
 
   return (!variants ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
@@ -69,7 +76,7 @@ const EditTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel,
                 <p>Video not found!</p> 
               </Card> :
               <video width="100%" height="auto" controls>
-                <source src={videoUrl} type="video/mp4" />
+                <source src={trick.video} type="video/mp4" />
               </video>
           }
 

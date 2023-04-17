@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Col, message, Popconfirm, Row, Select, Space, Table } from "antd";
+import { Button, Col, message, Popconfirm, Row, Select, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { deleteCategory, getCategories } from "../../../api/xsports/categoriesApi";
@@ -9,6 +9,7 @@ import { useSessionStorage } from "../../../hooks";
 import AddCategoryModal from "./AddCategoryModal";
 import EditCategoryModal from "./EditCategoryModal";
 import SearchInput from "../../generics/Search";
+import { getColorBasedOnPublishStatus } from "../../../utils/utils";
 
 const CategoryPage: React.FunctionComponent = () => {
   const history = useHistory();
@@ -21,7 +22,9 @@ const CategoryPage: React.FunctionComponent = () => {
   const [categoryEdit, setCategoryEdit] = useState<CategoryPayload>({
     id: 0,
     name: '',
-    photo: ''
+    photo: '',
+    publishStatus: '',
+    lastUpdated: ''
   });
 
   const getCategoriesData = async (search: string) => {
@@ -94,6 +97,17 @@ const CategoryPage: React.FunctionComponent = () => {
     };
   };
 
+  const renderStatus = useCallback((sport: CategoryPayload) => {
+    const color = getColorBasedOnPublishStatus(sport.publishStatus);
+    return (
+      <>
+        <Tag color={color} key={sport.id}>
+          {sport.publishStatus.toLocaleUpperCase()}
+        </Tag>
+      </>
+    )
+  }, []);
+
 
   useEffect(() => {
     getCategoriesData("")
@@ -149,7 +163,13 @@ const CategoryPage: React.FunctionComponent = () => {
         <>
           <Table dataSource={data} pagination={{ pageSize: 20 }} onRow={rowProps}>
             <Table.Column key="index" dataIndex="id" title="Index" width={25} />
+
             <Table.Column key="category" dataIndex="name" title="Category" />
+
+            <Table.Column title="Status" render={renderStatus}/>
+
+            <Table.Column dataIndex="lastUpdated" title="Last Updated"/>
+
             <Table.Column
               key="actionColumn"
               render={renderActionColumn}

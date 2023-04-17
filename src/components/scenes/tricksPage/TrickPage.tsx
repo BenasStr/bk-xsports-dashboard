@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Col, message, Popconfirm, Row, Select, Space, Table } from "antd";
+import { Button, Col, message, Popconfirm, Row, Select, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { getTricks, deleteTrick, deleteTrickVariant, getTrick } from "../../../api/xsports/tricksApi";
@@ -13,6 +13,7 @@ import AddTrickVariantModal from "./AddTrickVariantModal";
 import EditTrickModal from "./EditTrickModal";
 import EditTrickVariantModal from "./EditTrickVariantModal";
 import SearchInput from "../../generics/Search";
+import { getColorBasedOnPublishStatus } from "../../../utils/utils";
 
 const TricksPage: React.FunctionComponent = () => {
   const [data, setData] = useState<TrickPayload[]>([]);
@@ -39,6 +40,9 @@ const TricksPage: React.FunctionComponent = () => {
     description: '',
     difficulty: '',
     video: '',
+    publishStatus: '',
+    lastUpdated: '',
+    variantsCreated: '',
     trickParents: [],
     trickChildren: [],
     trickVariants: []
@@ -57,7 +61,7 @@ const TricksPage: React.FunctionComponent = () => {
 
   const handleModalSubmit = useCallback(() => {
     handleCloseModal();
-    getTricksData();
+    getTricksData("");
   }, []);
 
   const handleEditButtonClick = useCallback((trick: TrickPayload) => (event: any) => {
@@ -151,6 +155,17 @@ const TricksPage: React.FunctionComponent = () => {
   const handleSearch = (value: string) => {
     getTricksData(value)
   };
+
+  const renderStatus = useCallback((trick: TrickPayload) => {
+    const color = getColorBasedOnPublishStatus(trick.publishStatus);
+    return (
+      <>
+        <Tag color={color} key={trick.id}>
+          {trick.publishStatus.toLocaleUpperCase()}
+        </Tag>
+      </>
+    )
+  }, []);
 
   useEffect(() => {
     getTricksData("")
@@ -262,10 +277,10 @@ const TricksPage: React.FunctionComponent = () => {
               <Table.Column dataIndex="id" title="Index" width={25} />
               <Table.Column dataIndex="name" title="Trick" />
               <Table.Column dataIndex="difficulty" title="Difficulty" />
-              <Table.Column
-                render={renderActionColumn}
-                fixed="right"
-              />
+              <Table.Column title="Status" render={renderStatus}/>
+              <Table.Column dataIndex="variantsCreated" title="Variants Created"/>
+              <Table.Column dataIndex="lastUpdated" title="Last Updated"/>
+              <Table.Column render={renderActionColumn} fixed="right"/>
             </Table>
     
             <AddTrickModal

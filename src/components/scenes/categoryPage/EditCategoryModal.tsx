@@ -17,13 +17,15 @@ const EditCategoryModal: React.FunctionComponent<Props> = ({ open, onCancel, onS
   const [uploadedImage, setUploadedImage] = useState<FormData>();
 
   const initialValues = useMemo(() => ({
-    name: category.name,
+    name: category.name
   }), [category])
 
   const handleFormSubmit = async (values: CategoryEditPayload) => {
     try {
       await updateCategory(sessionStorage ? sessionStorage : "", sportId, category.id, values);
-      await uploadCategoryImage(sessionStorage ? sessionStorage : "", sportId, category.id, uploadedImage)
+      if (uploadedImage != null) {
+        await uploadCategoryImage(sessionStorage ? sessionStorage : "", sportId, category.id, uploadedImage)
+      }
       message.success("Updated category!");
       onSubmit();
     } catch (err) {

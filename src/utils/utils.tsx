@@ -1,3 +1,5 @@
+import { stat } from "fs";
+
 export const createImage = (url: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image();
@@ -32,8 +34,8 @@ export const getCroppedImg = (imageSrc: string, pixelCrop: { x: number; y: numbe
       const ctx = canvas.getContext("2d")
 
       if (!ctx) {
-      reject(new Error("Bruh"))
-      throw new Error("Bruh")
+        reject(new Error("Bruh"))
+        throw new Error("Bruh")
       }
 
       ctx.canvas.height = pixelCrop.height
@@ -58,4 +60,17 @@ export const getCroppedImg = (imageSrc: string, pixelCrop: { x: number; y: numbe
       reject(new Error("Bruh 3"))
     }
   })
+}
+
+export const getColorBasedOnPublishStatus = (status: string) => {
+  switch (status) {
+    case "PUBLISHED":
+      return "green";
+    case "SCHEDULED":
+      return "yellow";
+    case "UPDATED":
+      return "cyan";
+    default:
+      return "red";
+  }
 }

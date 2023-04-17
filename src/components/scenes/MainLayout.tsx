@@ -7,12 +7,13 @@ import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../hooks";
 import { typeSafeSwitch } from "../../utils/generics";
 import "./MainLayout.css";
-import { getMe, getUser } from "../../api/xsports/usersApi";
+import { getMe } from "../../api/xsports/usersApi";
 import { UserBasicPayload } from "../../api/apipayloads";
 
 type MenuItems =
   | "SPORTS"
   | "VARIANTS"
+  | "PUBLISH"
   | "USERS";
 
 type UserMenuItems = 
@@ -22,14 +23,19 @@ type UserMenuItems =
 const menuItemKeys: MenuItems[] = [
   "SPORTS",
   "VARIANTS",
+  "PUBLISH",
   "USERS"
 ];
 
-const userMenuItemKeys: UserMenuItems[] = ["ACCOUNT", "LOGOUT"];
+const userMenuItemKeys: UserMenuItems[] = [
+  "ACCOUNT",
+  "LOGOUT"
+];
 
 const getNameByMenuKey = typeSafeSwitch<MenuItems | UserMenuItems, string>({
   SPORTS: "Sports",
   VARIANTS: "Variants",
+  PUBLISH: "Publish",
   USERS: "Users",
   ACCOUNT: "Account",
   LOGOUT: "Log out",
@@ -69,6 +75,11 @@ const MainLayout: React.FunctionComponent<React.PropsWithChildren<{currentKey: s
     if (key === "VARIANTS") {
       setKeyState("VARIANTS")
       history.push("/variants")
+    }
+
+    if (key === "PUBLISH") {
+      setKeyState("PUBLISH")
+      history.push("/publish")
     }
 
     if (key === "USERS") {

@@ -9,6 +9,7 @@ import { useSessionStorage } from "../../../hooks";
 import AddSportModal from "./AddSportModal";
 import EditSportModal from "./EditSportModal";
 import SearchInput from "../../generics/Search";
+import { getColorBasedOnPublishStatus } from "../../../utils/utils";
 
 const SportsPage: React.FunctionComponent = () => {
   const [sports, setSports] = useState<SportPayload[]>();
@@ -21,6 +22,8 @@ const SportsPage: React.FunctionComponent = () => {
     id: 0,
     name: '',
     photo: '',
+    publishStatus: '',
+    lastUpdated: '',
     variants: []
   });
 
@@ -100,6 +103,17 @@ const SportsPage: React.FunctionComponent = () => {
     );
   }, []);
 
+  const renderStatus = useCallback((sport: SportPayload) => {
+    const color = getColorBasedOnPublishStatus(sport.publishStatus);
+    return (
+      <>
+        <Tag color={color} key={sport.id}>
+          {sport.publishStatus.toLocaleUpperCase()}
+        </Tag>
+      </>
+    )
+  }, []);
+
   const rowProps = (sport: SportPayload) => {
     return {
       onClick: (event: MouseEvent) => {
@@ -162,15 +176,16 @@ const SportsPage: React.FunctionComponent = () => {
         <>
           <Table dataSource={sports} pagination={{ pageSize: 20 }} onRow={rowProps}>
             <Table.Column dataIndex="id" title="Index" width={25} />
+
             <Table.Column dataIndex="name" title="Sport" />
-            <Table.Column
-              title="Variants"
-              render={renderTags}
-            />
-            <Table.Column
-              render={renderActionColumn}
-              fixed="right"
-            />
+
+            <Table.Column title="Variants" render={renderTags}/>
+
+            <Table.Column title="Status" render={renderStatus}/>
+
+            <Table.Column dataIndex="lastUpdated" title="Last Updated"/>
+
+            <Table.Column render={renderActionColumn} fixed="right"/>
           </Table>
 
           <AddSportModal
