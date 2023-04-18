@@ -18,10 +18,12 @@ interface Props extends ModalProps {
 }
 
 const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sportId, categoryId, tricks, trickEdit, difficulties }) => {
+  console.log(trickEdit)
   const [form] = Form.useForm<TrickEditPayload>();
   const { sessionStorage } = useSessionStorage();
   const [difficulty, setDifficulty] = useState<number>(0);
   const [video, setVideo] = useState<RcFile>();
+  const [videoIsUploading, setVideoIsUploading] = useState<boolean>(false);
 
   const initialValues = useMemo(() => ({
     name: trickEdit.name,
@@ -41,6 +43,7 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
     try {
       const trick: TrickPayload = await updateTrick(sessionStorage ? sessionStorage : "", sportId, categoryId, trickEdit.id, values);
       if (video != null) {
+        setVideoIsUploading(true);
         await uploadVideo(sessionStorage?sessionStorage:"", sportId, categoryId, trick.id, video);
       }
       message.success("Updated trick!");
@@ -48,6 +51,7 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
     } catch (err) {
       message.error("Failed to update trick!");
     }
+    setVideoIsUploading(false);
   };
 
   const filterOption = (input: string, option: any) => {
@@ -91,12 +95,12 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
             </Form.Item>
 
             {
-              trickEdit.video == null? 
+              trickEdit.videoUrl == null? 
                 <Card>
                   <p>Video not found!</p> 
                 </Card> :
                 <video width="100%" height="auto" controls>
-                  <source src={trickEdit.video} type="video/mp4" />
+                  <source src={trickEdit.videoUrl} type="video/mp4" />
                 </video>
             }
 

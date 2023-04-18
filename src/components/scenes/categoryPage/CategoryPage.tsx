@@ -24,6 +24,7 @@ const CategoryPage: React.FunctionComponent = () => {
     name: '',
     photo: '',
     publishStatus: '',
+    tricksCount: 0,
     lastUpdated: ''
   });
 
@@ -169,6 +170,8 @@ const CategoryPage: React.FunctionComponent = () => {
             <Table.Column title="Status" render={renderStatus}/>
 
             <Table.Column dataIndex="lastUpdated" title="Last Updated"/>
+
+            <Table.Column dataIndex="tricksCount" title="Tricks Count"/>
 
             <Table.Column
               key="actionColumn"

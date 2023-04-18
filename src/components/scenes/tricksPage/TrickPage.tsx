@@ -186,6 +186,14 @@ const TricksPage: React.FunctionComponent = () => {
     );
   }, []);
 
+  const renderMissingVideo = useCallback((trick: TrickPayload) => {
+    if (trick.videoUrl == null) {
+      return (
+        <Tag color="red">MISSING VIDEO</Tag>
+      );
+    }
+  }, []);
+
   const renderVariantActionColumn = useCallback((trickId: number) => (trickVariant: TrickBasicPayload) => {
     return (
       <div style={{ float: "right" }}>
@@ -280,6 +288,7 @@ const TricksPage: React.FunctionComponent = () => {
               <Table.Column title="Status" render={renderStatus}/>
               <Table.Column dataIndex="variantsCreated" title="Variants Created"/>
               <Table.Column dataIndex="lastUpdated" title="Last Updated"/>
+              <Table.Column render={renderMissingVideo} title="Missing"/>
               <Table.Column render={renderActionColumn} fixed="right"/>
             </Table>
     

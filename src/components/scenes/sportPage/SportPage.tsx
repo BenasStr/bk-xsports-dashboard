@@ -24,6 +24,7 @@ const SportsPage: React.FunctionComponent = () => {
     photo: '',
     publishStatus: '',
     lastUpdated: '',
+    categoriesCount: 0,
     variants: []
   });
 
@@ -184,6 +185,8 @@ const SportsPage: React.FunctionComponent = () => {
             <Table.Column title="Status" render={renderStatus}/>
 
             <Table.Column dataIndex="lastUpdated" title="Last Updated"/>
+
+            <Table.Column dataIndex="categoriesCount" title = "Categories Count"/>
 
             <Table.Column render={renderActionColumn} fixed="right"/>
           </Table>

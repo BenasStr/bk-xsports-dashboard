@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Form, Input, Button, message, Modal, ModalProps, DatePicker, Select, SelectProps } from 'antd';
+import { Form, Button, message, Modal, ModalProps, DatePicker, Select, SelectProps } from 'antd';
 import { PublishAvailableCategoriesPayload, PublishEditPayload } from '../../../api/apipayloads';
 import { useSessionStorage } from '../../../hooks';
 import { createPublish } from '../../../api/xsports/publichApi';
@@ -24,7 +24,8 @@ const AddPublishModal: React.FunctionComponent<Props> = ({open, onCancel, onSubm
   };
 
   const disabledDate = (current: Moment | null) => {
-    return current && current < moment().startOf('day');
+    const tomorrow = moment().add(1, 'days').startOf('day');
+    return !current || current.isBefore(tomorrow, 'day');
   };
 
   const mapToOptions = (): SelectProps["options"] => {

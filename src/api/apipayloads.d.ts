@@ -53,6 +53,7 @@ export interface SportPayload {
   photo: string;
   publishStatus: string;
   lastUpdated: string;
+  categoriesCount: number;
   variants: VariantPayload[];
 }
 
@@ -77,6 +78,7 @@ export interface CategoryPayload {
   name: string;
   photo: string;
   publishStatus: string;
+  tricksCount: number;
   lastUpdated: string;
 }
 
@@ -91,7 +93,7 @@ export interface TrickPayload {
   shortDescription: string;
   description: string
   difficulty: string;
-  video: string;
+  videoUrl: string;
   publishStatus: string;
   variantsCreated: string;
   lastUpdated: string;

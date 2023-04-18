@@ -18,12 +18,12 @@ const roles: string[] = [
 const UserPage: React.FunctionComponent = () => {
   const [data, setData] = useState<UsersPage>();
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
-  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedRole, setSelectedRole] = useState<string | undefined>(undefined);
   const { sessionStorage } = useSessionStorage();
 
   const getUsersData = async (search: string) => {
     try {
-      const data: UsersPage = await getUsers(sessionStorage ? sessionStorage : "", search, selectedRole);
+      const data: UsersPage = await getUsers(sessionStorage ? sessionStorage : "", search, selectedRole?selectedRole:"");
       setData(data);
     } catch (err) {
       console.log(err);
@@ -79,7 +79,7 @@ const UserPage: React.FunctionComponent = () => {
 
   const handleChange = (value: string) => {
     if (value === "ALL") {
-      setSelectedRole("");
+      setSelectedRole(undefined);
     } else {
       setSelectedRole(value);
     }
@@ -140,6 +140,7 @@ const UserPage: React.FunctionComponent = () => {
 
           <Col span={8}>
             <Select 
+              value={selectedRole}
               onChange={handleChange}
               placeholder="Role Filter" 
               options={mapToSelectProps()}
