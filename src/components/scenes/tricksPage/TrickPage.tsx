@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Col, message, Popconfirm, Row, Select, Space, Table, Tag } from "antd";
+import { Button, Col, message, Popconfirm, Row, Select, SelectProps, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { getTricks, deleteTrick, deleteTrickVariant, getTrick } from "../../../api/xsports/tricksApi";
@@ -13,7 +13,7 @@ import AddTrickVariantModal from "./AddTrickVariantModal";
 import EditTrickModal from "./EditTrickModal";
 import EditTrickVariantModal from "./EditTrickVariantModal";
 import SearchInput from "../../generics/Search";
-import { getColorBasedOnPublishStatus } from "../../../utils/utils";
+import { getColorBasedOnPublishStatus, getStatuses } from "../../../utils/utils";
 
 const TricksPage: React.FunctionComponent = () => {
   const [data, setData] = useState<TrickPayload[]>([]);
@@ -32,6 +32,10 @@ const TricksPage: React.FunctionComponent = () => {
   const history = useHistory();
   const [sportId] = useState<number>(parseInt(history.location.pathname.split("/")[2]));
   const [categoryId] = useState<number>(parseInt(history.location.pathname.split("/")[4]));
+
+  const [selectedStatus, setSelectedStatus] = useState<string | undefined>(undefined);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string | undefined>(undefined);
+
   const { sessionStorage } = useSessionStorage();
   const [trickEdit, setTrickEdit] = useState<TrickPayload>({
     id: 0,
@@ -39,7 +43,7 @@ const TricksPage: React.FunctionComponent = () => {
     shortDescription: '',
     description: '',
     difficulty: '',
-    video: '',
+    videoUrl: '',
     publishStatus: '',
     lastUpdated: '',
     variantsCreated: '',
@@ -167,6 +171,23 @@ const TricksPage: React.FunctionComponent = () => {
     )
   }, []);
 
+  const mapToSelectProps = (): SelectProps["options"] => {
+    return getStatuses().map((status) => {
+      return {
+        value: status,
+        label: status
+      }});
+  };
+
+  const handleChange = (value: string) => {
+    if (value === "ALL" || value === undefined) {
+      console.log(value);
+      setSelectedStatus(undefined);
+    } else {
+      setSelectedStatus(value);
+    }
+  };
+
   useEffect(() => {
     getTricksData("")
     getDifficultiesData()
@@ -254,15 +275,41 @@ const TricksPage: React.FunctionComponent = () => {
       <>
         <div style={{ marginBottom: '10px' }}>
           <Row gutter={[8, 8]}>
-            <Col span={8}>
+            <Col span={5}>
               <SearchInput onSearch={handleSearch}/>
             </Col>
 
-            <Col span={8}>
-              <Select/>
+            <Col span={14}>
+              <Select 
+                value={selectedStatus}
+                onChange={handleChange}
+                placeholder="Status Filter" 
+                options={mapToSelectProps()}
+                style={{ width: '190px', marginRight: '10px'}}/>
+
+              <Select
+                value={selectedStatus}
+                onChange={handleChange}
+                placeholder="Difficulty Filter" 
+                options={mapToSelectProps()}
+                style={{ width: '190px', marginRight: '10px' }}/>
+
+              <Select
+                value={selectedStatus}
+                onChange={handleChange}
+                placeholder="Missing Video Filter" 
+                options={mapToSelectProps()}
+                style={{ width: '190px', marginRight: '10px' }}/>
+
+              <Select
+                value={selectedStatus}
+                onChange={handleChange}
+                placeholder="Missing Variants Filter" 
+                options={mapToSelectProps()}
+                style={{ width: '190px' }}/>
             </Col>
 
-            <Col span={8}>
+            <Col span={5}>
               <div style={{float: 'right'}}>
                 <Button onClick={() => handleOpenAddModal()}>+ Add Trick</Button>
               </div>

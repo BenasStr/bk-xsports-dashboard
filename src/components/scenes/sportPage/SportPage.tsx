@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Col, Input, message, Popconfirm, Row, Select, Space, Table, Tag } from "antd";
+import { Button, Col, Input, message, Popconfirm, Row, Select, SelectProps, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { deleteSport, getSports } from "../../../api/xsports/sportsApi";
@@ -9,13 +9,15 @@ import { useSessionStorage } from "../../../hooks";
 import AddSportModal from "./AddSportModal";
 import EditSportModal from "./EditSportModal";
 import SearchInput from "../../generics/Search";
-import { getColorBasedOnPublishStatus } from "../../../utils/utils";
+import { getColorBasedOnPublishStatus, getStatuses } from "../../../utils/utils";
+import { stat } from "fs";
 
 const SportsPage: React.FunctionComponent = () => {
   const [sports, setSports] = useState<SportPayload[]>();
   const [doneLoading, setLoadingState] = useState<boolean>(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
+  const [selectedStatus, setSelectedStatus] = useState<string | undefined>(undefined);
   const { sessionStorage } = useSessionStorage();
   const history = useHistory();
   const [sportEdit, setSoprtEdit] = useState<SportPayload>({
@@ -55,7 +57,7 @@ const SportsPage: React.FunctionComponent = () => {
   const getSportsData = async (search: string) => {
     setLoadingState(false);
     try {
-      const data: SportPayload[] = await getSports(sessionStorage ? sessionStorage : "", search);
+      const data: SportPayload[] = await getSports(sessionStorage ? sessionStorage : "", search, selectedStatus?selectedStatus:"");
       setSports(data);
     } catch (err) {
       message.error("Failed to reterieve sports!")
@@ -123,6 +125,23 @@ const SportsPage: React.FunctionComponent = () => {
     };
   };
 
+  const mapToSelectProps = (): SelectProps["options"] => {
+    return getStatuses().map((status) => {
+      return {
+        value: status,
+        label: status
+      }});
+  };
+
+  const handleChange = (value: string) => {
+    if (value === "ALL" || value === undefined) {
+      console.log(value);
+      setSelectedStatus(undefined);
+    } else {
+      setSelectedStatus(value);
+    }
+  };
+
   useEffect(() => {
     getSportsData("");
   }, []);
@@ -161,7 +180,12 @@ const SportsPage: React.FunctionComponent = () => {
           </Col>
 
           <Col span={8}>
-            <Select/>
+            <Select 
+              value={selectedStatus}
+              onChange={handleChange}
+              placeholder="Status Filter" 
+              options={mapToSelectProps()}
+              style={{ width: '160px' }}/>
           </Col>
 
           <Col span={8}>

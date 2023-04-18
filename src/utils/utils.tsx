@@ -74,3 +74,13 @@ export const getColorBasedOnPublishStatus = (status: string) => {
       return "red";
   }
 }
+
+export const getStatuses = () => {
+  return [
+    "PUBLISHED",
+    "SCHEDULED",
+    "UPDATED",
+    "NOT_PUBLISHED",
+    "ALL"
+  ]
+}

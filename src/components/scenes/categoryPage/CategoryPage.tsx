@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Col, message, Popconfirm, Row, Select, Space, Table, Tag } from "antd";
+import { Button, Col, message, Popconfirm, Row, Select, SelectProps, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { deleteCategory, getCategories } from "../../../api/xsports/categoriesApi";
@@ -9,7 +9,7 @@ import { useSessionStorage } from "../../../hooks";
 import AddCategoryModal from "./AddCategoryModal";
 import EditCategoryModal from "./EditCategoryModal";
 import SearchInput from "../../generics/Search";
-import { getColorBasedOnPublishStatus } from "../../../utils/utils";
+import { getColorBasedOnPublishStatus, getStatuses } from "../../../utils/utils";
 
 const CategoryPage: React.FunctionComponent = () => {
   const history = useHistory();
@@ -18,6 +18,7 @@ const CategoryPage: React.FunctionComponent = () => {
   const [doneLoading, setLoadingState] = useState<boolean>(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
+  const [selectedStatus, setSelectedStatus] = useState<string | undefined>(undefined);
   const { sessionStorage } = useSessionStorage();
   const [categoryEdit, setCategoryEdit] = useState<CategoryPayload>({
     id: 0,
@@ -31,7 +32,7 @@ const CategoryPage: React.FunctionComponent = () => {
   const getCategoriesData = async (search: string) => {
     setLoadingState(false);
     try {
-      const data: CategoryPayload[] = await getCategories(sessionStorage ? sessionStorage : "", sportId, search);
+      const data: CategoryPayload[] = await getCategories(sessionStorage ? sessionStorage : "", sportId, search, selectedStatus?selectedStatus:"");
       setData(data)
     } catch (err) {
       message.error("Failed to reterieve categories!");
@@ -98,6 +99,22 @@ const CategoryPage: React.FunctionComponent = () => {
     };
   };
 
+  const mapToSelectProps = (): SelectProps["options"] => {
+    return getStatuses().map((status) => {
+      return {
+        value: status,
+        label: status
+      }});
+  };
+
+  const handleChange = (value: string) => {
+    if (value === "ALL") {
+      setSelectedStatus(undefined);
+    } else {
+      setSelectedStatus(value);
+    }
+  };
+
   const renderStatus = useCallback((sport: CategoryPayload) => {
     const color = getColorBasedOnPublishStatus(sport.publishStatus);
     return (
@@ -148,7 +165,12 @@ const CategoryPage: React.FunctionComponent = () => {
           </Col>
 
           <Col span={8}>
-            <Select/>
+            <Select
+              value={selectedStatus}
+              onChange={handleChange}
+              placeholder="Status Filter" 
+              options={mapToSelectProps()}
+              style={{ width: '160px' }}/>
           </Col>
 
           <Col span={8}>

@@ -26,7 +26,6 @@ const UserPage: React.FunctionComponent = () => {
       const data: UsersPage = await getUsers(sessionStorage ? sessionStorage : "", search, selectedRole?selectedRole:"");
       setData(data);
     } catch (err) {
-      console.log(err);
       message.error("Failed to reterieve users!")
     }
   };
@@ -35,7 +34,6 @@ const UserPage: React.FunctionComponent = () => {
     try {
       await deleteUser(sessionStorage?sessionStorage:"", id);
     } catch (err) {
-      console.log(err);
       message.error("Failed to delete user!");
     }
     await getUsersData("");
