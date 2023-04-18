@@ -145,6 +145,11 @@ export interface PublishEditPayload {
   categoryId: number;
 }
 
+export interface PublishPublishPayload {
+  sportId: number;
+  categotyId: number;
+}
+
 export interface PublishAvailableCategoriesPayload {
   id: number;
   name: string;

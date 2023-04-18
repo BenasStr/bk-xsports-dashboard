@@ -5,6 +5,7 @@ import { PublishAvailableCategoriesPayload, PublishPayload } from "../../../api/
 import { deletePublish, getPublishCategories, getPublishes } from "../../../api/xsports/publichApi";
 import { useSessionStorage } from "../../../hooks";
 import AddPublishModal from "./AddPublishModal";
+import PublishModal from "./PublishModal";
 
 const PublishPage: React.FunctionComponent = () => {
   const [publish, setPublish] = useState<PublishPayload[]>();
@@ -12,6 +13,7 @@ const PublishPage: React.FunctionComponent = () => {
   const [doneLoading, setLoadingState] = useState<boolean>(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
+  const [isPublishModalVisible, setIsPublishModalVisible] = useState<boolean>(false);
   const [publishEdit, setPublishEdit] = useState<PublishPayload>({
     id: 0,
     name: '',
@@ -32,19 +34,27 @@ const PublishPage: React.FunctionComponent = () => {
     setIsAddModalVisible(true);
   }, []);
 
-  const handleCloseAddModal = useCallback(() => {
+  const handleCloseModal = useCallback(() => {
     setIsAddModalVisible(false);
     setIsEditModalVisible(false);
+    setIsPublishModalVisible(false);
   }, []);
 
   const handleAddModalSubmit = useCallback(() => {
     setIsAddModalVisible(false);
     getPublishData()
-  }, [])
+  }, []);
 
-  const handleCloseEditModal = useCallback(() => {
-    setIsAddModalVisible(false);
-    setIsEditModalVisible(false);
+  const handleOpenPublishModal = useCallback(() => {
+    setIsPublishModalVisible(true);
+  }, []);
+
+  const handlePublishModalSubmit = useCallback(() => {
+    setIsPublishModalVisible(false);
+  }, []);
+
+  const handleOpenEditModal = useCallback(() => {
+    setIsEditModalVisible(true);
   }, []);
 
   const handleEditModalSubmit = useCallback(() => {
@@ -124,10 +134,9 @@ const PublishPage: React.FunctionComponent = () => {
 
   return (
     <div>
-      <div style={{ marginBottom: '10px' }}>
-        <div style={{float: 'right', marginBottom: '10px'}}>
-          <Button onClick={() => handleOpenAddModal()}>+ Add Publish</Button>
-        </div>
+      <div style={{float: 'right', marginBottom: '10px' }}>
+        <Button onClick={() => handleOpenPublishModal()} style={{marginRight: '5px'}}> Publish </Button>
+        <Button onClick={() => handleOpenAddModal()}>+ Schedule Publish</Button>
       </div>
 
       {
@@ -136,16 +145,23 @@ const PublishPage: React.FunctionComponent = () => {
           <Table dataSource={publish} pagination={{ pageSize: 20 }}>
             <Table.Column dataIndex="id" title="Index" width={25} />
 
-            <Table.Column dataIndex="name" title="Name" />
+            <Table.Column dataIndex="name" title="Updates" />
 
             <Table.Column dataIndex="releaseDate" title="Scheduled release"/>
 
             <Table.Column render={renderActionColumn} fixed="right"/>
           </Table>
 
+
+          <PublishModal
+            open={isPublishModalVisible}
+            onCancel={handleCloseModal}
+            onSubmit={handlePublishModalSubmit}
+            categories={categories}
+          />
           <AddPublishModal 
             open={isAddModalVisible}
-            onCancel={handleCloseAddModal}
+            onCancel={handleCloseModal}
             onSubmit={handleAddModalSubmit}
             categories={categories}
           />

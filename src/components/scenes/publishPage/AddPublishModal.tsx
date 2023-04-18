@@ -19,7 +19,7 @@ const AddPublishModal: React.FunctionComponent<Props> = ({open, onCancel, onSubm
       const addedPublish = await createPublish(sessionStorage?sessionStorage:"", values);
       onSubmit()
     } catch (err) {
-      message.error("Failed to create sport!")
+      message.error("Failed to create publish!")
     }
   };
 
