@@ -18,7 +18,9 @@ const AddCategoryModal: React.FunctionComponent<Props> = ({ open, onCancel, onSu
   const handleFormSubmit = async (values: CategoryEditPayload) => {
     try {
       const createdCategory = await createCategory(sessionStorage ? sessionStorage : "", sportId, values);
-      await uploadCategoryImage(sessionStorage ? sessionStorage : "", sportId, createdCategory.id, uploadedImage);
+      if (uploadedImage == null) {
+        await uploadCategoryImage(sessionStorage ? sessionStorage : "", sportId, createdCategory.id, uploadedImage);
+      }
       message.success("Created new category!");
       onSubmit()
     } catch (err) {

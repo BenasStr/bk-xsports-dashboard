@@ -10,15 +10,20 @@ interface Props extends ModalProps {
     categories: PublishAvailableCategoriesPayload[]
 }
 
+interface Payload {
+    categoryId: number
+}
+
 const PublishModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, categories }) => {
-    const [form] = Form.useForm<PublishPublishPayload>();
+    const [form] = Form.useForm<Payload>();
     const { sessionStorage } = useSessionStorage();
 
-    const handleFormSubmit = async (values: PublishPublishPayload) => {
+    const handleFormSubmit = async (values: Payload) => {
         try {
-            await publish(sessionStorage?sessionStorage:"", getSportIdByCategoryId(categories, values.categotyId), values.categotyId)
-            onSubmit()
+            await publish(sessionStorage?sessionStorage:"", getSportIdByCategoryId(categories, values.categoryId), values.categoryId)
+            onSubmit();
         } catch (err) {
+            console.log(err);
             message.error("Failed to publish!")
         }
     };

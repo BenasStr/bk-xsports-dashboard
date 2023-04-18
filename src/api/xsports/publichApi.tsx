@@ -69,8 +69,9 @@ export const deletePublish = async (token: string, id: number) => {
 }
 
 export const publish = async (token:string, sportId: number, categoryId: number) => {
-    const response: AxiosResponse<any, any> = await axios.delete(
+    const response: AxiosResponse<any, any> = await axios.post(
         `${API_XSPORTS_PREFIX}/publish/now/sport/${sportId}/category/${categoryId}`,
+        {},
         {
             headers: {
                 "Content-Type": "application/json",

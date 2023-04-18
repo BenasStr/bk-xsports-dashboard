@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { Form, Input, Button, message, Modal, ModalProps, Radio, Space, Select, RadioChangeEvent, SelectProps, Card, Popconfirm } from 'antd';
-import { DifficultyPayload, SportEditPayload, TrickEditPayload, TrickPayload } from '../../../api/apipayloads';
-import { DeleteOutlined, LoadingOutlined } from '@ant-design/icons';
+import React, { useState, useMemo } from 'react';
+import { Form, Input, Button, message, Modal, ModalProps, Radio, Space, Select, RadioChangeEvent, SelectProps, Card } from 'antd';
+import { DifficultyPayload, TrickEditPayload, TrickPayload } from '../../../api/apipayloads';
+import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';
-import { DefaultOptionType } from 'antd/es/select';
 import { updateTrick, uploadVideo } from '../../../api/xsports/tricksApi';
 import VideoUploader from '../../videos/videoUploader';
 import { RcFile } from 'antd/es/upload';
@@ -22,15 +21,21 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
   const [form] = Form.useForm<TrickEditPayload>();
   const { sessionStorage } = useSessionStorage();
   const [difficulty, setDifficulty] = useState<number>(0);
-  const [videoError, setVideoError] = useState<boolean>(true);
   const [video, setVideo] = useState<RcFile>();
 
   const initialValues = useMemo(() => ({
     name: trickEdit.name,
     description: trickEdit.description,
     shortDescription: trickEdit.shortDescription,
-    difficultyId: (difficulties.find(d => d.name === trickEdit.difficulty))?.id
-  }), [trickEdit])
+    difficultyId: (difficulties.find(d => d.name === trickEdit.difficulty))?.id,
+    trickParentsIds: trickEdit.trickParents
+      .map((trick) => {
+        return {
+          value: trick.id,
+          label: trick.name
+        }
+      })
+  }), [trickEdit]);
 
   const handleFormSubmit = async (values: TrickEditPayload) => {
     try {
@@ -45,10 +50,6 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
     }
   };
 
-  const handleChange = (value: string | string[]) => {
-    console.log(`selected ${value}`);
-  };
-
   const filterOption = (input: string, option: any) => {
     return option.label.includes(input);
   }
@@ -61,16 +62,6 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
         label: trick.name
       }
     });
-  }
-
-  const mapToDefaultProps = (): DefaultOptionType["options"] => {
-    return trickEdit.trickParents
-      .map((trick) => {
-        return {
-          value: trick.id,
-          label: trick.name
-        }
-      })
   }
 
   const onChange = (e: RadioChangeEvent) => {
@@ -100,7 +91,7 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
             </Form.Item>
 
             {
-              videoError ? 
+              trickEdit.video == null? 
                 <Card>
                   <p>Video not found!</p> 
                 </Card> :
@@ -137,9 +128,7 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
               <Select
                 mode="multiple"
                 placeholder="Please select"
-                onChange={handleChange}
                 filterOption={filterOption}
-                defaultValue={mapToDefaultProps()}
                 options={mapToSelectProps()}
               />
             </Form.Item>

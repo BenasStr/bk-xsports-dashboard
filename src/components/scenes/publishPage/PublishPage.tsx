@@ -63,18 +63,19 @@ const PublishPage: React.FunctionComponent = () => {
   }, []);
 
   const getPublishData = async () => {
+    setLoadingState(false);
     try {
       const data: PublishPayload[] = await getPublishes(sessionStorage?sessionStorage:"");
       setPublish(data);
     } catch (err) {
       message.error("Failed to reterieve publish!")
     }
+    setLoadingState(true)
   }
 
   const getPublishAvailableCategories = async () => {
     try {
       const data: PublishAvailableCategoriesPayload[] = await getPublishCategories(sessionStorage?sessionStorage:"")
-      console.log(data);
       setCategories(data);
     } catch (err) {
       message.error("Failed to retrieve categories!");
@@ -101,10 +102,8 @@ const PublishPage: React.FunctionComponent = () => {
   }, []);
 
   useEffect(() => {
-    setLoadingState(false);
     getPublishData();
     getPublishAvailableCategories()
-    setLoadingState(true)
   }, []);
 
   const renderActionColumn = useCallback((publish: PublishPayload) => {
@@ -135,7 +134,7 @@ const PublishPage: React.FunctionComponent = () => {
   return (
     <div>
       <div style={{float: 'right', marginBottom: '10px' }}>
-        <Button onClick={() => handleOpenPublishModal()} style={{marginRight: '5px'}}> Publish </Button>
+        <Button type="primary" onClick={() => handleOpenPublishModal()} style={{marginRight: '5px'}}> Publish </Button>
         <Button onClick={() => handleOpenAddModal()}>+ Schedule Publish</Button>
       </div>
 
