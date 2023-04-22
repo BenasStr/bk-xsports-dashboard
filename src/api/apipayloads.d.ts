@@ -52,6 +52,7 @@ export interface SportPayload {
   name: string;
   photo: string;
   publishStatus: string;
+  contentStatus: string;
   lastUpdated: string;
   categoriesCount: number;
   variants: VariantPayload[];

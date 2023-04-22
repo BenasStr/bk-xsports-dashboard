@@ -13,7 +13,7 @@ import AddTrickVariantModal from "./AddTrickVariantModal";
 import EditTrickModal from "./EditTrickModal";
 import EditTrickVariantModal from "./EditTrickVariantModal";
 import SearchInput from "../../generics/Search";
-import { getColorBasedOnPublishStatus, getStatuses } from "../../../utils/utils";
+import { getColorBasedOnPublishStatus, getDifficultiesStrings, getStatuses } from "../../../utils/utils";
 
 const TricksPage: React.FunctionComponent = () => {
   const [data, setData] = useState<TrickPayload[]>([]);
@@ -35,6 +35,8 @@ const TricksPage: React.FunctionComponent = () => {
 
   const [selectedStatus, setSelectedStatus] = useState<string | undefined>(undefined);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string | undefined>(undefined);
+  const [selectedMissingVideo, setSelectedMissingVideo] = useState<string | undefined>(undefined);
+  const [selectedMissingVaraints, setSelectedMissingVariants] = useState<string | undefined>(undefined);
 
   const { sessionStorage } = useSessionStorage();
   const [trickEdit, setTrickEdit] = useState<TrickPayload>({
@@ -179,12 +181,64 @@ const TricksPage: React.FunctionComponent = () => {
       }});
   };
 
-  const handleChange = (value: string) => {
-    if (value === "ALL" || value === undefined) {
+  const mapToDifficultyProps = (): SelectProps["options"] => {
+    return getDifficultiesStrings().map((difficulty) => {
+      return {
+        value: difficulty,
+        label: difficulty
+      }
+    })
+  }
+
+  const mapToBooleanProps = (): SelectProps["options"] => {
+    return [
+      {
+        value: "true",
+        label: "True"
+      },
+      {
+        value: "false",
+        label: "False"
+      },
+      {
+        value: "All",
+        label: "All"
+      }
+    ]
+  }
+
+  const handleStatusFilter = (value: string) => {
+    if (value === "All" || value === undefined) {
       console.log(value);
       setSelectedStatus(undefined);
     } else {
       setSelectedStatus(value);
+    }
+  };
+
+  const handleDifficultyFilter = (value: string) => {
+    if (value === "All" || value === undefined) {
+      console.log(value);
+      setSelectedDifficulty(undefined);
+    } else {
+      setSelectedDifficulty(value);
+    }
+  };
+
+  const handleMissingVideoFilter = (value: string) => {
+    if (value === "All" || value === undefined) {
+      setSelectedMissingVideo(undefined);
+    } else {
+      setSelectedMissingVideo(value);
+    }
+  };
+
+  const handleMissingVariantsFilter = (value: string) => {
+    if (value === "All" || value === undefined) {
+      console.log(value);
+      setSelectedMissingVariants(undefined);
+    } else {
+      setSelectedMissingVariants(value);
     }
   };
 
@@ -282,30 +336,30 @@ const TricksPage: React.FunctionComponent = () => {
             <Col span={14}>
               <Select 
                 value={selectedStatus}
-                onChange={handleChange}
+                onChange={handleStatusFilter}
                 placeholder="Status Filter" 
                 options={mapToSelectProps()}
                 style={{ width: '190px', marginRight: '10px'}}/>
 
               <Select
-                value={selectedStatus}
-                onChange={handleChange}
+                value={selectedDifficulty}
+                onChange={handleDifficultyFilter}
                 placeholder="Difficulty Filter" 
-                options={mapToSelectProps()}
+                options={mapToDifficultyProps()}
                 style={{ width: '190px', marginRight: '10px' }}/>
 
               <Select
-                value={selectedStatus}
-                onChange={handleChange}
+                value={selectedMissingVideo}
+                onChange={handleMissingVideoFilter}
                 placeholder="Missing Video Filter" 
-                options={mapToSelectProps()}
+                options={mapToBooleanProps()}
                 style={{ width: '190px', marginRight: '10px' }}/>
 
               <Select
-                value={selectedStatus}
-                onChange={handleChange}
+                value={selectedMissingVaraints}
+                onChange={handleMissingVariantsFilter}
                 placeholder="Missing Variants Filter" 
-                options={mapToSelectProps()}
+                options={mapToBooleanProps()}
                 style={{ width: '190px' }}/>
             </Col>
 

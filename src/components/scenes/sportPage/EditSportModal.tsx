@@ -9,33 +9,20 @@ import ImageUploader from '../../images/ImageUploader';
 
 interface Props extends ModalProps {
   sport: SportPayload;
+  variants: VariantPayload[];
   onSubmit: () => void;
 }
 
-const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sport }) => {
+const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sport, variants }) => {
+  console.log("uga buga")
   const [form] = Form.useForm<SportEditPayload>();
   const { sessionStorage } = useSessionStorage();
-  const [variants, setVariants] = useState<VariantPayload[]>([]);
   const [uploadedImage, setUploadedImage] = useState<FormData>();
 
   const initialValues = useMemo(() => ({
     name: sport.name,
     variantsIds: sport.variants.map((variant) => variant.id)
   }), [sport])
-
-  const getVariantsData = async () => {
-    try {
-      const data: VariantPayload[] = await getVariants(sessionStorage ? sessionStorage : "");
-      data.forEach((variant) => {
-        if (variant.name === "Standard") {
-          data.splice(data.indexOf(variant), 1)
-        }
-      });
-      setVariants(data);
-    } catch (err) {
-      message.error("Failed to retrieve variants!");
-    }
-  }
 
   const handleImageUpload = (image: FormData) => {
     setUploadedImage(image);
@@ -53,10 +40,6 @@ const EditSportModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
       message.error("Failed to update sport!");
     }
   };
-
-  useEffect(() => {
-    getVariantsData();
-  }, []);
 
   return (!variants ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
 

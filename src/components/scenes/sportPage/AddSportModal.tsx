@@ -1,35 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Button, message, List, Checkbox, Modal, ModalProps } from 'antd';
 import { SportEditPayload, VariantPayload } from '../../../api/apipayloads';
 import { createSport, uploadSportImage } from '../../../api/xsports/sportsApi';
-import { getVariants } from '../../../api/xsports/variantsApi';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import ImageUploader from '../../images/ImageUploader';
 
 interface Props extends ModalProps {
+  variants: VariantPayload[]
   onSubmit: () => void;
 }
 
-const AddSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit}) => {
+const AddSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit, variants}) => {
   const [form] = Form.useForm<SportEditPayload>();
   const {sessionStorage} = useSessionStorage();
-  const [variants, setVariants] = useState<VariantPayload[]>([]);
   const [uploadedImage, setUploadedImage] = useState<FormData>();
-
-  const getVariantsData = async () => {
-    try {
-      const data: VariantPayload[] = await getVariants(sessionStorage?sessionStorage:"");
-      data.forEach((variant) => {
-        if (variant.name === "Standard") {
-          data.splice(data.indexOf(variant), 1)
-        }
-      });
-      setVariants(data);
-    } catch (err) {
-      message.error("Failed to reterieve variants!")
-    }
-  }
 
   const handleFormSubmit = async (values: SportEditPayload) => {
     try {
@@ -46,10 +31,6 @@ const AddSportModal: React.FunctionComponent<Props> = ({open, onCancel, onSubmit
   const handleImageUpload = (image: FormData) => {
     setUploadedImage(image);
   }
-
-  useEffect(() => {
-    getVariantsData();
-  }, []);
 
   return ( !variants ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
     <Modal

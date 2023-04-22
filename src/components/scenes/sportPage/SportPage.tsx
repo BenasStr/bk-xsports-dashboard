@@ -3,14 +3,14 @@ import { Button, Col, Input, message, Popconfirm, Row, Select, SelectProps, Spac
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
 import { deleteSport, getSports } from "../../../api/xsports/sportsApi";
-import { SportPayload } from "../../../api/apipayloads";
+import { SportPayload, VariantPayload } from "../../../api/apipayloads";
 import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../../hooks";
 import AddSportModal from "./AddSportModal";
 import EditSportModal from "./EditSportModal";
 import SearchInput from "../../generics/Search";
 import { getColorBasedOnPublishStatus, getStatuses } from "../../../utils/utils";
-import { stat } from "fs";
+import { getVariants } from "../../../api/xsports/variantsApi";
 
 const SportsPage: React.FunctionComponent = () => {
   const [sports, setSports] = useState<SportPayload[]>();
@@ -18,6 +18,7 @@ const SportsPage: React.FunctionComponent = () => {
   const [isAddModalVisible, setIsAddModalVisible] = useState<boolean>(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
   const [selectedStatus, setSelectedStatus] = useState<string | undefined>(undefined);
+  const [variants, setVariants] = useState<VariantPayload[]>([]);
   const { sessionStorage } = useSessionStorage();
   const history = useHistory();
   const [sportEdit, setSoprtEdit] = useState<SportPayload>({
@@ -25,12 +26,14 @@ const SportsPage: React.FunctionComponent = () => {
     name: '',
     photo: '',
     publishStatus: '',
+    contentStatus: '',
     lastUpdated: '',
     categoriesCount: 0,
     variants: []
   });
 
   const handleOpenAddModal = useCallback(() => {
+    getVariantsData()
     setIsAddModalVisible(true);
   }, []);
 
@@ -65,6 +68,20 @@ const SportsPage: React.FunctionComponent = () => {
     setLoadingState(true);
   }
 
+  const getVariantsData = async () => {
+    try {
+      const data: VariantPayload[] = await getVariants(sessionStorage ? sessionStorage : "");
+      data.forEach((variant) => {
+        if (variant.name === "Standard") {
+          data.splice(data.indexOf(variant), 1)
+        }
+      });
+      setVariants(data);
+    } catch (err) {
+      message.error("Failed to retrieve variants!");
+    }
+  }
+
   const onRowClick = (sport: SportPayload, event: MouseEvent) => {
     history.push(`/sports/${sport.id}/categories`);
   };
@@ -72,6 +89,7 @@ const SportsPage: React.FunctionComponent = () => {
   const handleEditButtonClick = useCallback((sport: SportPayload) => (event: MouseEvent) => {
     event.stopPropagation();
     setSoprtEdit(sport);
+    getVariantsData();
     setIsEditModalVisible(true);
   }, []);
 
@@ -117,6 +135,17 @@ const SportsPage: React.FunctionComponent = () => {
     )
   }, []);
 
+  const renderContentStatus = useCallback((sport: SportPayload) => {
+    const color = getColorBasedOnPublishStatus(sport.contentStatus);
+    return (
+      <>
+        <Tag color={color} key={sport.id}>
+          {sport.contentStatus.toLocaleUpperCase()}
+        </Tag>
+      </>
+    )
+  }, []);
+
   const rowProps = (sport: SportPayload) => {
     return {
       onClick: (event: MouseEvent) => {
@@ -134,13 +163,12 @@ const SportsPage: React.FunctionComponent = () => {
   };
 
   const handleChange = (value: string) => {
-    if (value === "ALL" || value === undefined) {
-      console.log(value);
-      setSelectedStatus(undefined);
-    } else {
-      setSelectedStatus(value);
-    }
+    setSelectedStatus(value);
   };
+  
+  const clearSelectedState = () => {
+    setSelectedStatus(undefined)
+  }
 
   useEffect(() => {
     getSportsData("");
@@ -181,7 +209,8 @@ const SportsPage: React.FunctionComponent = () => {
 
           <Col span={8}>
             <Select 
-              value={selectedStatus}
+              allowClear
+              onClear={clearSelectedState}
               onChange={handleChange}
               placeholder="Status Filter" 
               options={mapToSelectProps()}
@@ -212,6 +241,8 @@ const SportsPage: React.FunctionComponent = () => {
 
             <Table.Column dataIndex="categoriesCount" title = "Categories Count"/>
 
+            <Table.Column title = "Content Status" render={renderContentStatus}/>
+
             <Table.Column render={renderActionColumn} fixed="right"/>
           </Table>
 
@@ -219,12 +250,14 @@ const SportsPage: React.FunctionComponent = () => {
             open={isAddModalVisible}
             onCancel={handleCloseAddModal}
             onSubmit={handleAddModalSubmit}
+            variants={variants}
           />
           <EditSportModal
             open={isEditModalVisible}
             onCancel={handleCloseEditModal}
             onSubmit={handleEditModalSubmit}
             sport={sportEdit}
+            variants={variants}
           />
         </>
       }

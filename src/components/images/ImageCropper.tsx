@@ -60,12 +60,6 @@ const ImageCropper: React.FunctionComponent<Props> = ({
                 containerStyle: { height: "70%", marginTop: 50 },
               }}
             />
-            <Slider
-              min={0}
-              max={1}
-              step={0.1}
-              style={{ bottom: 0, position: "relative" }}
-            />
           </>
         )}
       </div>

@@ -67,7 +67,7 @@ const VariantPage: React.FunctionComponent = () => {
         await deleteVariant(sessionStorage?sessionStorage : "", id);
         message.success("Deleted variant!")
       } catch(err) {
-        message.error("Unable to delete variant!")
+        message.error("Variant is used!")
       }
       await getVariantsData();
       setLoadingState(true)

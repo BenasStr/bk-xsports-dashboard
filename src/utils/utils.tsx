@@ -77,10 +77,18 @@ export const getColorBasedOnPublishStatus = (status: string) => {
 
 export const getStatuses = () => {
   return [
-    "PUBLISHED",
-    "SCHEDULED",
-    "UPDATED",
-    "NOT_PUBLISHED",
-    "ALL"
+    "Published",
+    "Scheduled",
+    "Updated",
+    "Not_published"
+  ]
+}
+
+export const getDifficultiesStrings = () => {
+  return [
+    "Beginner",
+    "Intermediate",
+    "Advanced",
+    "Pro"
   ]
 }
