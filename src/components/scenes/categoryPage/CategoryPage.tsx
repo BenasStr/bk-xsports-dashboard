@@ -25,6 +25,7 @@ const CategoryPage: React.FunctionComponent = () => {
     name: '',
     photo: '',
     publishStatus: '',
+    contentStatus: '',
     tricksCount: 0,
     lastUpdated: ''
   });
@@ -108,12 +109,12 @@ const CategoryPage: React.FunctionComponent = () => {
   };
 
   const handleChange = (value: string) => {
-    if (value === "ALL") {
-      setSelectedStatus(undefined);
-    } else {
-      setSelectedStatus(value);
-    }
+    setSelectedStatus(value);
   };
+  
+  const clearSelectedState = () => {
+    setSelectedStatus(undefined)
+  }
 
   const renderStatus = useCallback((sport: CategoryPayload) => {
     const color = getColorBasedOnPublishStatus(sport.publishStatus);
@@ -121,6 +122,17 @@ const CategoryPage: React.FunctionComponent = () => {
       <>
         <Tag color={color} key={sport.id}>
           {sport.publishStatus.toLocaleUpperCase()}
+        </Tag>
+      </>
+    )
+  }, []);
+
+  const renderContentStatus = useCallback((category: CategoryPayload) => {
+    const color = getColorBasedOnPublishStatus(category.contentStatus);
+    return (
+      <>
+        <Tag color={color} key={category.id}>
+          {category.contentStatus.toLocaleUpperCase()}
         </Tag>
       </>
     )
@@ -166,7 +178,8 @@ const CategoryPage: React.FunctionComponent = () => {
 
           <Col span={8}>
             <Select
-              value={selectedStatus}
+              allowClear
+              onClear={clearSelectedState}
               onChange={handleChange}
               placeholder="Status Filter" 
               options={mapToSelectProps()}
@@ -194,6 +207,8 @@ const CategoryPage: React.FunctionComponent = () => {
             <Table.Column dataIndex="lastUpdated" title="Last Updated"/>
 
             <Table.Column dataIndex="tricksCount" title="Tricks Count"/>
+
+            <Table.Column title = "Content Status" render={renderContentStatus}/>
 
             <Table.Column
               key="actionColumn"

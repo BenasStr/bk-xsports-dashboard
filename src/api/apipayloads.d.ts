@@ -79,6 +79,7 @@ export interface CategoryPayload {
   name: string;
   photo: string;
   publishStatus: string;
+  contentStatus: string;
   tricksCount: number;
   lastUpdated: string;
 }
