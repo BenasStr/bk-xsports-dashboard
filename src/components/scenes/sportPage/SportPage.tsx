@@ -252,6 +252,7 @@ const SportsPage: React.FunctionComponent = () => {
             onSubmit={handleAddModalSubmit}
             variants={variants}
           />
+          
           <EditSportModal
             open={isEditModalVisible}
             onCancel={handleCloseEditModal}

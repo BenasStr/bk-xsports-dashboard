@@ -2,10 +2,10 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Col, message, Popconfirm, Row, Select, SelectProps, Space, Table, Tag } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from "react";
-import { getTricks, deleteTrick, deleteTrickVariant, getTrick } from "../../../api/xsports/tricksApi";
+import { getTricks, deleteTrick, deleteTrickVariant } from "../../../api/xsports/tricksApi";
 import { getSport } from "../../../api/xsports/sportsApi";
 import { getDifficulties } from "../../../api/xsports/difficultiesApi";
-import { DifficultyPayload, TrickBasicPayload, TrickEditPayload, TrickPayload, SportPayload, VariantPayload, TrickVariantEditPayload } from "../../../api/apipayloads";
+import { DifficultyPayload, TrickBasicPayload, TrickPayload, SportPayload, VariantPayload } from "../../../api/apipayloads";
 import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../../hooks";
 import AddTrickModal from "./AddTrickModal";
@@ -41,11 +41,13 @@ const TricksPage: React.FunctionComponent = () => {
   const { sessionStorage } = useSessionStorage();
   const [trickEdit, setTrickEdit] = useState<TrickPayload>({
     id: 0,
+    trickId: 0,
     name: '',
     shortDescription: '',
     description: '',
     difficulty: '',
     videoUrl: '',
+    baseVariantId: 0,
     publishStatus: '',
     lastUpdated: '',
     variantsCreated: '',
@@ -53,6 +55,17 @@ const TricksPage: React.FunctionComponent = () => {
     trickChildren: [],
     trickVariants: []
   });
+
+  const [trickVariantEdit, setTrickVariantEdit] = useState<TrickBasicPayload>({
+    id: 0,
+    trickId: 0,
+    name: '',
+    shortDescription: '',
+    description: '',
+    baseVariantId: 0,
+    videoUrl: '',
+    variantId: 0
+  })
 
   const handleOpenAddModal = useCallback(() => {
     setIsAddModalVisible(true);
@@ -76,9 +89,12 @@ const TricksPage: React.FunctionComponent = () => {
     setIsEditModalVisible(true);
   }, []);
 
-  const handleEditVariantButtonClick = useCallback((trick: TrickBasicPayload) => (event: any) => {
+  const handleEditVariantButtonClick = useCallback((trick: TrickPayload, trickVariant: TrickBasicPayload) => (event: any) => {
     event.stopPropagation();
-    getTrickData(trick.id);
+    console.log(trick);
+    console.log(trickVariant);
+    setTrickEdit(trick)
+    setTrickVariantEdit(trickVariant);
     setIsEditVariantModalVisible(true);
   }, []);
 
@@ -86,21 +102,13 @@ const TricksPage: React.FunctionComponent = () => {
     try {
       setLoadingState(false);
       const data: TrickPayload[] = await getTricks(sessionStorage ? sessionStorage : "", sportId, categoryId, search);
+      console.log(data)
       setData(data);
+      console.log(data);
       setLoadingState(true);
     } catch (err) {
       console.log(err);
       message.error("Failed to reterieve tricks!");
-    }
-  }
-
-  const getTrickData = async (id: number) => {
-    try {
-      const data: TrickPayload = await getTrick(sessionStorage ? sessionStorage : "", sportId, categoryId, id);
-      setTrickEdit(data);
-    } catch (err) {
-      console.log(err);
-      message.error("Failed to retrieve trick!");
     }
   }
 
@@ -209,7 +217,6 @@ const TricksPage: React.FunctionComponent = () => {
 
   const handleStatusFilter = (value: string) => {
     if (value === "All" || value === undefined) {
-      console.log(value);
       setSelectedStatus(undefined);
     } else {
       setSelectedStatus(value);
@@ -218,7 +225,6 @@ const TricksPage: React.FunctionComponent = () => {
 
   const handleDifficultyFilter = (value: string) => {
     if (value === "All" || value === undefined) {
-      console.log(value);
       setSelectedDifficulty(undefined);
     } else {
       setSelectedDifficulty(value);
@@ -235,12 +241,27 @@ const TricksPage: React.FunctionComponent = () => {
 
   const handleMissingVariantsFilter = (value: string) => {
     if (value === "All" || value === undefined) {
-      console.log(value);
       setSelectedMissingVariants(undefined);
     } else {
       setSelectedMissingVariants(value);
     }
   };
+
+  const clearSelectedState = () => {
+    setSelectedStatus(undefined)
+  }
+
+  const clearSelectedDifficulty = () => {
+    setSelectedDifficulty(undefined)
+  }
+
+  const clearSelectedMissingVideo = () => {
+    setSelectedMissingVideo(undefined)
+  }
+
+  const clearSelectedMissingVariant = () => {
+    setSelectedMissingVariants(undefined)
+  }
 
   useEffect(() => {
     getTricksData("")
@@ -248,13 +269,13 @@ const TricksPage: React.FunctionComponent = () => {
     getSportVariants()
   }, []);
 
-  const renderVariantTricks = useCallback((tricks: TrickBasicPayload[], trickId: number) => {
+  const renderVariantTricks = useCallback((trick: TrickPayload) => {
     return(
-      <Table dataSource={tricks} pagination={false} showHeader={false}>
+      <Table dataSource={trick.trickVariants} pagination={false} showHeader={false}>
         <Table.Column dataIndex="id" width={70}/>
         <Table.Column dataIndex="name"/>
         <Table.Column
-            render={renderVariantActionColumn(trickId)}
+            render={renderVariantActionColumn(trick)}
             fixed="right"
           />
       </Table>
@@ -269,11 +290,11 @@ const TricksPage: React.FunctionComponent = () => {
     }
   }, []);
 
-  const renderVariantActionColumn = useCallback((trickId: number) => (trickVariant: TrickBasicPayload) => {
+  const renderVariantActionColumn = useCallback((trick: TrickPayload) => (trickVariant: TrickBasicPayload) => {
     return (
       <div style={{ float: "right" }}>
         <Space>
-          <Button onClick={handleEditVariantButtonClick(trickVariant)}>
+          <Button onClick={handleEditVariantButtonClick(trick, trickVariant)}>
             Edit
           </Button>
 
@@ -282,7 +303,7 @@ const TricksPage: React.FunctionComponent = () => {
             onClick={(e: MouseEvent) => e.stopPropagation()}
             placement="topRight"
             title={"Delete this trick variant?"}
-            onConfirm={handleVariantDeleteClick(trickId, trickVariant.id)}
+            onConfirm={handleVariantDeleteClick(trick.id, trickVariant.id)}
             okText="Yes"
             cancelText="Cancel"
           >
@@ -312,7 +333,7 @@ const TricksPage: React.FunctionComponent = () => {
             onClick={(e: MouseEvent) => e.stopPropagation()}
             placement="topRight"
             title={"Delete this trick and variants?"}
-            onConfirm={handleTrickDeleteClick(trick.id)}
+            onConfirm={handleTrickDeleteClick(trick.trickId)}
             okText="Yes"
             cancelText="Cancel"
           >
@@ -335,28 +356,36 @@ const TricksPage: React.FunctionComponent = () => {
 
             <Col span={14}>
               <Select 
+                allowClear
                 value={selectedStatus}
+                onClear={clearSelectedState}
                 onChange={handleStatusFilter}
                 placeholder="Status Filter" 
                 options={mapToSelectProps()}
                 style={{ width: '190px', marginRight: '10px'}}/>
 
               <Select
+                allowClear
                 value={selectedDifficulty}
+                onClear={clearSelectedDifficulty}
                 onChange={handleDifficultyFilter}
                 placeholder="Difficulty Filter" 
                 options={mapToDifficultyProps()}
                 style={{ width: '190px', marginRight: '10px' }}/>
 
               <Select
+                allowClear
                 value={selectedMissingVideo}
+                onClear={clearSelectedMissingVideo}
                 onChange={handleMissingVideoFilter}
                 placeholder="Missing Video Filter" 
                 options={mapToBooleanProps()}
                 style={{ width: '190px', marginRight: '10px' }}/>
 
               <Select
+                allowClear
                 value={selectedMissingVaraints}
+                onClear={clearSelectedMissingVariant}
                 onChange={handleMissingVariantsFilter}
                 placeholder="Missing Variants Filter" 
                 options={mapToBooleanProps()}
@@ -379,11 +408,11 @@ const TricksPage: React.FunctionComponent = () => {
               dataSource={data} pagination={{ pageSize: 20 }}
               rowKey={(record) => record.id}
               expandable={{
-                expandedRowRender: (record) => renderVariantTricks(record.trickVariants, record.id),
+                expandedRowRender: (record) => renderVariantTricks(record),
                 rowExpandable: (record) => record.trickVariants.length > 0,
               }}  
             >
-              <Table.Column dataIndex="id" title="Index" width={25} />
+              <Table.Column dataIndex="trickId" title="Index" width={25} />
               <Table.Column dataIndex="name" title="Trick" />
               <Table.Column dataIndex="difficulty" title="Difficulty" />
               <Table.Column title="Status" render={renderStatus}/>
@@ -412,6 +441,7 @@ const TricksPage: React.FunctionComponent = () => {
               trickId={selectedTrickId}
               variants={variants}     
             />
+
             <EditTrickModal 
               open={isEditModalVisible} 
               onCancel={handleCloseModal} 
@@ -422,6 +452,7 @@ const TricksPage: React.FunctionComponent = () => {
               trickEdit={trickEdit}
               difficulties={difficulties}
             />
+
             <EditTrickVariantModal
               open={isEditVariantModalVisible}
               onCancel={handleCloseModal}
@@ -429,8 +460,8 @@ const TricksPage: React.FunctionComponent = () => {
               sportId={sportId}
               categoryId={categoryId}
               trick={trickEdit}
-              variants={variants}
-            />
+              trickVariant={trickVariantEdit}
+              />
           </>
         }
       </>

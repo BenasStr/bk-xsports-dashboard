@@ -1,63 +1,49 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Form, Input, Button, message, List, Checkbox, Modal, ModalProps, Image, Select, SelectProps, Card } from 'antd';
-import { SportEditPayload, TrickPayload, VariantPayload } from '../../../api/apipayloads';
+import React, { useState, useMemo } from 'react';
+import { Form, Button, message, Modal, ModalProps, Select, SelectProps, Card } from 'antd';
+import { TrickBasicPayload, TrickEditPayload, TrickPayload, TrickVariantEditPayload, VariantPayload } from '../../../api/apipayloads';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useSessionStorage } from '../../../hooks';
 import TextArea from 'antd/es/input/TextArea';
 import VideoUploader from '../../videos/videoUploader';
 import { RcFile } from 'antd/es/upload';
-import { uploadVideo } from '../../../api/xsports/tricksApi';
+import { updateTrickVariant, uploadVideo } from '../../../api/xsports/tricksApi';
 
 interface Props extends ModalProps {
+  trickVariant: TrickBasicPayload;
   trick: TrickPayload;
   sportId: number;
   categoryId: number;
-  variants: VariantPayload[];
   onSubmit: () => void;
 }
 
-const videoUrl = 'https://app-benasstr.cloud.okteto.net/api/videos/trick-1.mp4';
-
-const EditTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sportId, categoryId, trick, variants}) => {
-  const [form] = Form.useForm<SportEditPayload>();
+const EditTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmit, sportId, categoryId, trick, trickVariant }) => {
+  const [form] = Form.useForm<TrickVariantEditPayload>();
   const { sessionStorage } = useSessionStorage();
-  const [videoError, setVideoError] = useState<boolean>(false);
   const [video, setVideo] = useState<RcFile>();
   const initialValues = useMemo(() => ({
-    name: trick.name,
-    shortDescription: trick.shortDescription,
-    description: trick.description,
-  }), [trick])
+    shortDescription: trickVariant.shortDescription,
+    description: trickVariant.description,
+  }), [trickVariant])
 
-  const handleFormSubmit = async (values: SportEditPayload) => {
+  const handleFormSubmit = async (values: TrickVariantEditPayload) => {
     try {
-      const trick: TrickPayload = null;
-      // await updateTrickVariant(sessionStorage ? sessionStorage : "", sportId, categoryId, 0, 0, values);
+      values.variantId = trickVariant.variantId;
+      await updateTrickVariant(sessionStorage ? sessionStorage : "", sportId, categoryId, trick.id, trickVariant.id, values);
       if (video != null) {
-        await uploadVideo(sessionStorage?sessionStorage:"", sportId, categoryId, trick.id, video);
+        await uploadVideo(sessionStorage?sessionStorage:"", sportId, categoryId, trickVariant.id, video);
       } 
-      message.success("Updated sport!");
+      message.success("Updated trick variant!");
       onSubmit();
     } catch (err) {
-      message.error("Failed to update sport!");
+      message.error("Failed to update trick variant!");
     }
   };
-
-  const mapToSelectProps = (): SelectProps["options"] => {
-    return variants.map((variant) => {
-      return {
-        value: variant.id,
-        label: variant.name
-      }
-    });
-  }
 
   const handleVidoeUpload = (file: RcFile) => {
     setVideo(file);
   }
 
-  return (!variants ? <LoadingOutlined style={{ fontSize: 24 }} spin /> :
-
+  return (
     <Modal destroyOnClose
       open={open}
       onCancel={onCancel}
@@ -71,12 +57,12 @@ const EditTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel,
         <Form form={form} initialValues={initialValues} onFinish={handleFormSubmit}>
 
           {
-            videoError ? 
+            trickVariant.videoUrl == null ? 
               <Card>
                 <p>Video not found!</p> 
               </Card> :
               <video width="100%" height="auto" controls>
-                <source src={trick.video} type="video/mp4" />
+                <source src={trick.videoUrl} type="video/mp4" />
               </video>
           }
 
@@ -90,13 +76,6 @@ const EditTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel,
 
           <Form.Item name="description" rules={[{ required: true, message: 'Missing description for trick!' }]}>
             <TextArea placeholder='Description' rows={8} maxLength={250} />
-          </Form.Item>
-
-          <Form.Item name="variantId">
-            <Select
-              placeholder="Please select variant"
-              options={mapToSelectProps()}
-            />
           </Form.Item>
 
           <Form.Item>

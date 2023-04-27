@@ -91,6 +91,7 @@ export interface CategoryEditPayload {
 // TRICKS
 export interface TrickPayload {
   id: number;
+  trickId: number;
   name: string;
   shortDescription: string;
   description: string
@@ -99,6 +100,7 @@ export interface TrickPayload {
   publishStatus: string;
   variantsCreated: string;
   lastUpdated: string;
+  baseVariantId: number;
   trickParents: TrickBasicPayload[];
   trickChildren: TrickBasicPayload[];
   trickVariants: TrickBasicPayload[];
@@ -106,8 +108,13 @@ export interface TrickPayload {
 
 export interface TrickBasicPayload {
   id: number;
+  trickId: number;
+  baseVariantId: number;
   name: string;
   shortDescription: string;
+  description: string;
+  videoUrl: string;
+  variantId: number;
 }
 
 export interface TrickEditPayload {
@@ -119,8 +126,9 @@ export interface TrickEditPayload {
 }
 
 export interface TrickVariantEditPayload {
-  description: string
+  description: string;
   shortDescription: string;
+  variantId: number;
 }
 
 // Difficulties

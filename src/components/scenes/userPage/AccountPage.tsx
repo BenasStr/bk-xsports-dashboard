@@ -49,18 +49,6 @@ const AccountPage: React.FunctionComponent = () => {
 
   return (
     <>
-      <Upload
-        name="avatar"
-        listType="picture-card"
-        className="avatar-uploader"
-        showUploadList={false}
-        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-        beforeUpload={beforeUpload}
-        onChange={handleChange}
-      >
-        {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-      </Upload>
-
       <Row gutter={[16, 16]}>
         <Col span={4}></Col>
         <Col span={8} >

@@ -43,10 +43,6 @@ const AddTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmi
     setVideoIsUploading(false)
   };
 
-  const handleChange = (value: string | string[]) => {
-    console.log(`selected ${value}`);
-  };
-
   const filterOption = (input: string, option: any) => {
     return option.label.includes(input);
   }
@@ -54,7 +50,7 @@ const AddTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmi
   const mapToSelectProps = (): SelectProps["options"] => {
     return tricks.map((trick) => {
       return {
-        value: trick.id,
+        value: trick.trickId,
         label: trick.name
       }
     });
@@ -122,7 +118,6 @@ const AddTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubmi
                 <Select
                   mode="multiple"
                   placeholder="Please select"
-                  onChange={handleChange}
                   filterOption={filterOption}
                   options={mapToSelectProps()}
                 />

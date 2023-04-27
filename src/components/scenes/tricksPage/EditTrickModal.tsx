@@ -32,16 +32,13 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
     difficultyId: (difficulties.find(d => d.name === trickEdit.difficulty))?.id,
     trickParentsIds: trickEdit.trickParents
       .map((trick) => {
-        return {
-          value: trick.id,
-          label: trick.name
-        }
+        return trick.trickId
       })
   }), [trickEdit]);
 
   const handleFormSubmit = async (values: TrickEditPayload) => {
     try {
-      const trick: TrickPayload = await updateTrick(sessionStorage ? sessionStorage : "", sportId, categoryId, trickEdit.id, values);
+      const trick: TrickPayload = await updateTrick(sessionStorage ? sessionStorage : "", sportId, categoryId, trickEdit.trickId, values);
       if (video != null) {
         setVideoIsUploading(true);
         await uploadVideo(sessionStorage?sessionStorage:"", sportId, categoryId, trick.id, video);
@@ -59,13 +56,26 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
   }
 
   const mapToSelectProps = (): SelectProps["options"] => {
-    return tricks.filter(trick => trick.id !== trickEdit.id)
+    return tricks.filter(trick => trick.trickId !== trickEdit.trickId)
     .map((trick) => {
+      console.log(trick.trickId)
       return {
-        value: trick.id,
+        value: trick.trickId,
         label: trick.name
       }
     });
+  }
+
+  const mapDefaultValues = (): SelectProps["options"] => {
+    return trickEdit.trickParents
+      .map((trick) => {
+        console.log("What ?" + trick.trickId)
+        console.log("Faken NAme " + trick.name)
+        return {
+          value: trick.trickId,
+          label: trick.name
+        }
+      })
   }
 
   const onChange = (e: RadioChangeEvent) => {
@@ -131,6 +141,7 @@ const EditTrickModal: React.FunctionComponent<Props> = ({ open, onCancel, onSubm
             <Form.Item name="trickParentsIds">
               <Select
                 mode="multiple"
+                defaultValue={mapDefaultValues()}
                 placeholder="Please select"
                 filterOption={filterOption}
                 options={mapToSelectProps()}
