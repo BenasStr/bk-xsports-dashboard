@@ -11,8 +11,7 @@ import AddUserModal from "./AddUserModal";
 const roles: string[] = [
   "ADMIN",
   "MODERATOR",
-  "USER",
-  "ALL"
+  "USER"
 ] 
 
 const UserPage: React.FunctionComponent = () => {
@@ -76,12 +75,12 @@ const UserPage: React.FunctionComponent = () => {
   };
 
   const handleChange = (value: string) => {
-    if (value === "ALL") {
-      setSelectedRole(undefined);
-    } else {
-      setSelectedRole(value);
-    }
+    setSelectedRole(value);
   };
+
+  const handleClear = () => {
+    setSelectedRole(undefined);
+  }
 
   const handleOpenAddModal = useCallback(() => {
     setIsAddModalVisible(true);
@@ -138,6 +137,8 @@ const UserPage: React.FunctionComponent = () => {
 
           <Col span={8}>
             <Select 
+              allowClear
+              onClear={handleClear}
               value={selectedRole}
               onChange={handleChange}
               placeholder="Role Filter" 

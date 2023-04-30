@@ -28,7 +28,7 @@ const EditTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel,
   const handleFormSubmit = async (values: TrickVariantEditPayload) => {
     try {
       values.variantId = trickVariant.variantId;
-      await updateTrickVariant(sessionStorage ? sessionStorage : "", sportId, categoryId, trick.id, trickVariant.id, values);
+      await updateTrickVariant(sessionStorage ? sessionStorage : "", sportId, categoryId, trick.trickId, trickVariant.id, values);
       if (video != null) {
         await uploadVideo(sessionStorage?sessionStorage:"", sportId, categoryId, trickVariant.id, video);
       } 

@@ -1,10 +1,39 @@
 import { API_XSPORTS_PREFIX } from "../api";
 import axios, { AxiosResponse } from "axios";
 import { TrickEditPayload, TrickVariantEditPayload } from "../apipayloads";
+import { stat } from "fs";
 
-export const getTricks = async (token: string, sportId: number, categoryId: number, search: string) => {
+export const getTricks = async (
+    token: string, 
+    sportId: number, 
+    categoryId: number, 
+    search: string, 
+    status: string | undefined, 
+    difficulty: string | undefined, 
+    missingVideo: string | undefined, 
+    missingVariants: string | undefined
+) => {
+    var url = `${API_XSPORTS_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks?search=${search}&extended=true`
+    
+    if (status != undefined) {
+        url += `&publishStatus=${status}`
+    } 
+
+    if (difficulty != undefined) {
+        url += `&difficulty=${difficulty}`
+    }
+
+    if (missingVideo != undefined) {
+        url += `&missingVideo=${missingVideo}`
+    }
+
+    if (missingVariants != undefined) {
+        url += `&missingVariants=${missingVariants}`
+    }
+
+
     const response: AxiosResponse<any, any> = await axios.get(
-        `${API_XSPORTS_PREFIX}/sports/${sportId}/categories/${categoryId}/tricks?search=${search}&extended=true`,
+        url,
         {
             headers: {
                 "Content-Type": "application/json",

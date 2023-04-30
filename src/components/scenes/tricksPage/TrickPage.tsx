@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getTricks, deleteTrick, deleteTrickVariant } from "../../../api/xsports/tricksApi";
 import { getSport } from "../../../api/xsports/sportsApi";
 import { getDifficulties } from "../../../api/xsports/difficultiesApi";
-import { DifficultyPayload, TrickBasicPayload, TrickPayload, SportPayload, VariantPayload } from "../../../api/apipayloads";
+import { DifficultyPayload, TrickBasicPayload, TrickPayload, SportPayload, VariantPayload, TrickEditPayload } from "../../../api/apipayloads";
 import { useHistory } from "react-router-dom";
 import { useSessionStorage } from "../../../hooks";
 import AddTrickModal from "./AddTrickModal";
@@ -101,7 +101,7 @@ const TricksPage: React.FunctionComponent = () => {
   const getTricksData = async (search: string) => {
     try {
       setLoadingState(false);
-      const data: TrickPayload[] = await getTricks(sessionStorage ? sessionStorage : "", sportId, categoryId, search);
+      const data: TrickPayload[] = await getTricks(sessionStorage ? sessionStorage : "", sportId, categoryId, search, selectedStatus, selectedDifficulty, selectedMissingVideo, selectedMissingVaraints);
       console.log(data)
       setData(data);
       console.log(data);
@@ -134,7 +134,7 @@ const TricksPage: React.FunctionComponent = () => {
 
   const handleAddVariantClick = useCallback((trick: TrickPayload) => async(event: any) => {
     event.stopPropagation();
-    setSelectedTrickId(trick.id);
+    setSelectedTrickId(trick.trickId);
     setIsAddVariantModalVisible(true);
   }, []);
 
@@ -207,44 +207,24 @@ const TricksPage: React.FunctionComponent = () => {
       {
         value: "false",
         label: "False"
-      },
-      {
-        value: "All",
-        label: "All"
       }
     ]
   }
 
   const handleStatusFilter = (value: string) => {
-    if (value === "All" || value === undefined) {
-      setSelectedStatus(undefined);
-    } else {
-      setSelectedStatus(value);
-    }
+    setSelectedStatus(value);
   };
 
   const handleDifficultyFilter = (value: string) => {
-    if (value === "All" || value === undefined) {
-      setSelectedDifficulty(undefined);
-    } else {
-      setSelectedDifficulty(value);
-    }
+    setSelectedDifficulty(value);
   };
 
   const handleMissingVideoFilter = (value: string) => {
-    if (value === "All" || value === undefined) {
-      setSelectedMissingVideo(undefined);
-    } else {
-      setSelectedMissingVideo(value);
-    }
+    setSelectedMissingVideo(value);
   };
 
   const handleMissingVariantsFilter = (value: string) => {
-    if (value === "All" || value === undefined) {
-      setSelectedMissingVariants(undefined);
-    } else {
-      setSelectedMissingVariants(value);
-    }
+    setSelectedMissingVariants(value);
   };
 
   const clearSelectedState = () => {
@@ -263,6 +243,10 @@ const TricksPage: React.FunctionComponent = () => {
     setSelectedMissingVariants(undefined)
   }
 
+  const dissableAddVariantButton = (trick: TrickPayload) => {
+    return trick.variantsCreated[0] === trick.variantsCreated[2];
+  }
+
   useEffect(() => {
     getTricksData("")
     getDifficultiesData()
@@ -274,6 +258,7 @@ const TricksPage: React.FunctionComponent = () => {
       <Table dataSource={trick.trickVariants} pagination={false} showHeader={false}>
         <Table.Column dataIndex="id" width={70}/>
         <Table.Column dataIndex="name"/>
+        <Table.Column render={renderVariantMissingVideo} align="right"/>
         <Table.Column
             render={renderVariantActionColumn(trick)}
             fixed="right"
@@ -283,6 +268,14 @@ const TricksPage: React.FunctionComponent = () => {
   }, []);
 
   const renderMissingVideo = useCallback((trick: TrickPayload) => {
+    if (trick.videoUrl == null) {
+      return (
+        <Tag color="red">MISSING VIDEO</Tag>
+      );
+    }
+  }, []);
+
+  const renderVariantMissingVideo = useCallback((trick: TrickBasicPayload) => {
     if (trick.videoUrl == null) {
       return (
         <Tag color="red">MISSING VIDEO</Tag>
@@ -320,7 +313,9 @@ const TricksPage: React.FunctionComponent = () => {
     return (
       <div style={{ float: "right" }}>
         <Space>
-          <Button onClick={handleAddVariantClick(trick)}>
+          <Button 
+            disabled={dissableAddVariantButton(trick)}
+            onClick={handleAddVariantClick(trick)}>
             + Add Variant
           </Button>
 
