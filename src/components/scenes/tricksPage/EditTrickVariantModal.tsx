@@ -62,7 +62,7 @@ const EditTrickVariantModal: React.FunctionComponent<Props> = ({ open, onCancel,
                 <p>Video not found!</p> 
               </Card> :
               <video width="100%" height="auto" controls>
-                <source src={trick.videoUrl} type="video/mp4" />
+                <source src={trickVariant.videoUrl} type="video/mp4" />
               </video>
           }
 
